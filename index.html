@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#0a0f1a">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="新疆旅行">
+<link rel="manifest" href="data:application/json;base64,eyJuYW1lIjoi57u/6ZmN5Lyg56S+6KGo6IqC6KGo5a6d5paH5YyW56ewIiwic2hvcnRfbmFtZSI6IuW7tOmZjeS8oOekvuihqaAiLCJzdGFydF91cmwiOiIuIiwiZGlzcGxheSI6InN0YW5kYWxvbmUiLCJiYWNrZ3JvdW5kX2NvbG9yIjoiIzBhMGYxYSIsInRoZW1lX2NvbG9yIjoiIzBhMGYxYSIsImljb25zIjpbXX0=">
+<title>🍂 新疆十一自驾旅行计划</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&display=swap');
+body{font-family:'Noto Sans SC','Microsoft YaHei',sans-serif;background:#0a0f1a;color:#e2e8f0;overflow:hidden;height:100vh}
+.container{display:flex;height:100vh}
+.sidebar{width:420px;min-width:420px;background:linear-gradient(180deg,#131a2e 0%,#0a0f1a 100%);overflow-y:auto;z-index:1000;border-right:1px solid rgba(255,255,255,.06);display:flex;flex-direction:column}
+.map-wrap{flex:1;position:relative}
+#map{width:100%;height:100%;z-index:1;background:#1a1f2e}
+.sidebar-header{padding:28px 24px 20px;background:linear-gradient(135deg,#f97316 0%,#dc2626 50%,#f59e0b 100%);flex-shrink:0;position:relative;overflow:hidden}
+.sidebar-header h1{font-size:24px;font-weight:700;color:#fff;margin-bottom:6px;position:relative}
+.sidebar-header p{font-size:13px;color:rgba(255,255,255,.9);line-height:1.6;position:relative}
+.tag-row{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap;position:relative}
+.tag{background:rgba(255,255,255,.2);color:#fff;padding:4px 12px;border-radius:20px;font-size:12px}
+.stats-bar{display:flex;padding:16px 24px;gap:8px;border-bottom:1px solid rgba(255,255,255,.06);flex-shrink:0;background:rgba(15,23,42,.5)}
+.stat{flex:1;text-align:center;padding:8px 0;border-radius:10px;background:rgba(255,255,255,.03)}
+.stat-val{font-size:20px;font-weight:700;background:linear-gradient(135deg,#f97316,#f59e0b);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.stat-label{font-size:11px;color:#64748b;margin-top:2px}
+.day-list{flex:1;overflow-y:auto;padding:12px 0}
+.day-list::-webkit-scrollbar{width:4px}
+.day-list::-webkit-scrollbar-thumb{background:rgba(255,255,255,.1);border-radius:4px}
+.day-card{margin:8px 16px;padding:16px 18px;border-radius:14px;background:rgba(30,41,59,.6);border:1px solid rgba(255,255,255,.05);cursor:pointer;transition:all .3s cubic-bezier(.4,0,.2,1);backdrop-filter:blur(10px)}
+.day-card:hover{background:rgba(30,41,59,.9);border-color:rgba(255,255,255,.1);transform:translateX(4px);box-shadow:0 4px 20px rgba(0,0,0,.3)}
+.day-card.active{background:linear-gradient(135deg,rgba(249,115,22,.15),rgba(245,158,11,.08));border-color:rgba(249,115,22,.4)}
+.day-card.rest-day{border-left:3px solid #3b82f6}
+.day-card.heavy-day{border-left:3px solid #f59e0b}
+.day-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.day-num{font-size:11px;font-weight:700;color:#f97316;letter-spacing:1.5px}
+.day-date{font-size:11px;color:#64748b}
+.day-title{font-size:15px;font-weight:600;color:#f1f5f9;margin-bottom:8px;line-height:1.4}
+.day-meta{display:flex;gap:16px;font-size:12px;color:#64748b;margin-bottom:8px}
+.day-meta span{display:flex;align-items:center;gap:4px}
+.day-meta i{font-size:12px;color:#f97316}
+.day-highlight{margin-top:8px;display:flex;flex-wrap:wrap;gap:6px}
+.day-highlight .spot{display:inline-flex;align-items:center;gap:4px;background:rgba(255,255,255,.06);color:#cbd5e1;padding:4px 10px;border-radius:8px;font-size:11px;border:1px solid rgba(255,255,255,.05)}
+.day-warning{margin-top:10px;font-size:11px;color:#fbbf24;background:rgba(251,191,36,.06);padding:8px 12px;border-radius:10px;border:1px solid rgba(251,191,36,.15);line-height:1.6}
+.detail-panel{position:absolute;top:16px;right:16px;width:380px;max-height:calc(100vh - 32px);background:rgba(15,23,42,.95);backdrop-filter:blur(20px);border-radius:20px;border:1px solid rgba(255,255,255,.1);box-shadow:0 25px 80px rgba(0,0,0,.5);z-index:1001;overflow:hidden;display:none;animation:slideIn .4s cubic-bezier(.4,0,.2,1)}
+.detail-panel.show{display:block}
+@keyframes slideIn{from{opacity:0;transform:translateY(-20px) scale(.95)}to{opacity:1;transform:translateY(0) scale(1)}}
+.detail-hero{width:100%;height:180px;background-size:cover;background-position:center;position:relative}
+.detail-hero::after{content:'';position:absolute;bottom:0;left:0;right:0;height:80px;background:linear-gradient(transparent,rgba(15,23,42,.95))}
+.detail-hero-title{position:absolute;bottom:16px;left:20px;right:60px;z-index:1}
+.detail-hero-title h2{font-size:22px;color:#fff;font-weight:700;text-shadow:0 2px 10px rgba(0,0,0,.3)}
+.detail-hero-title .sub{font-size:12px;color:rgba(255,255,255,.8);margin-top:4px}
+.detail-close{position:absolute;top:12px;right:12px;width:32px;height:32px;border-radius:50%;background:rgba(0,0,0,.4);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,.2);color:#fff;cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;transition:all .2s;z-index:2}
+.detail-close:hover{background:rgba(255,255,255,.2);transform:rotate(90deg)}
+.detail-body{padding:20px;max-height:calc(100vh - 250px);overflow-y:auto}
+.detail-body::-webkit-scrollbar{width:4px}
+.detail-body::-webkit-scrollbar-thumb{background:rgba(255,255,255,.1);border-radius:4px}
+.detail-section{margin-bottom:20px}
+.detail-section h3{font-size:12px;color:#f97316;font-weight:600;margin-bottom:10px;letter-spacing:1px;text-transform:uppercase;display:flex;align-items:center;gap:6px}
+.route-box{background:rgba(255,255,255,.03);border-radius:12px;padding:14px 16px;margin-bottom:16px;border:1px solid rgba(255,255,255,.05)}
+.route-box .from-to{display:flex;align-items:center;gap:10px;font-size:15px;font-weight:600;color:#f1f5f9}
+.route-box .arrow{color:#f97316;font-size:14px}
+.route-box .route-detail{margin-top:10px;display:flex;gap:20px;font-size:13px;color:#94a3b8}
+.route-box .route-detail span{display:flex;align-items:center;gap:6px}
+.route-box .route-detail i{color:#f97316;font-size:14px}
+.spot-card{background:rgba(255,255,255,.03);border-radius:12px;padding:14px 16px;margin-bottom:10px;display:flex;gap:14px;align-items:flex-start;border:1px solid rgba(255,255,255,.05);transition:all .2s}
+.spot-card:hover{background:rgba(255,255,255,.06)}
+.spot-icon{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.spot-icon.lake{background:rgba(59,130,246,.15)}
+.spot-icon.mountain{background:rgba(168,85,247,.15)}
+.spot-icon.village{background:rgba(34,197,94,.15)}
+.spot-icon.desert{background:rgba(245,158,11,.15)}
+.spot-icon.city{background:rgba(99,102,241,.15)}
+.spot-icon.grass{background:rgba(16,185,129,.15)}
+.spot-info h4{font-size:14px;color:#f1f5f9;font-weight:600;margin-bottom:4px}
+.spot-info p{font-size:12px;color:#94a3b8;line-height:1.5}
+.hotel-box{background:linear-gradient(135deg,rgba(59,130,246,.06),rgba(99,102,241,.03));border:1px solid rgba(59,130,246,.15);border-radius:12px;padding:14px 16px}
+.hotel-box h4{font-size:13px;color:#60a5fa;margin-bottom:6px;display:flex;align-items:center;gap:6px}
+.hotel-box p{font-size:12px;color:#94a3b8;line-height:1.5;margin-bottom:10px}
+.hotel-box.booked{background:linear-gradient(135deg,rgba(34,197,94,.06),rgba(16,185,129,.03));border:1px solid rgba(34,197,94,.2)}
+.hotel-box.booked h4{color:#4ade80}
+.hotel-box .booked-badge{display:inline-flex;align-items:center;gap:4px;font-size:10px;color:#4ade80;background:rgba(34,197,94,.12);padding:2px 10px;border-radius:10px;font-weight:600;margin-bottom:8px}
+.hotel-booked-detail{margin-top:10px}
+.hotel-booked-detail .hb-name{font-size:14px;color:#f1f5f9;font-weight:600;margin-bottom:4px}
+.hotel-booked-detail .hb-room{font-size:12px;color:#94a3b8;line-height:1.5;margin-bottom:6px}
+.hotel-booked-detail .hb-link{display:inline-flex;align-items:center;gap:4px;font-size:11px;color:#60a5fa;text-decoration:none;padding:4px 10px;border-radius:8px;background:rgba(59,130,246,.1);border:1px solid rgba(59,130,246,.2);transition:all .2s}
+.hotel-booked-detail .hb-link:hover{background:rgba(59,130,246,.2)}
+.food-box{background:rgba(239,68,68,.04);border:1px solid rgba(239,68,68,.12);border-radius:12px;padding:14px 16px}
+.food-box h4{font-size:13px;color:#f87171;margin-bottom:6px;display:flex;align-items:center;gap:6px}
+.food-box p{font-size:12px;color:#94a3b8;line-height:1.5}
+.custom-marker{position:relative}
+.marker-pin{width:36px;height:36px;border-radius:50% 50% 50% 0;transform:rotate(-45deg);display:flex;align-items:center;justify-content:center;box-shadow:0 4px 15px rgba(0,0,0,.4);transition:transform .2s}
+.marker-pin:hover{transform:rotate(-45deg) scale(1.1)}
+.marker-pin span{transform:rotate(45deg);font-size:14px;font-weight:700;color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.3)}
+.map-legend{position:absolute;bottom:24px;left:24px;background:rgba(15,23,42,.9);backdrop-filter:blur(20px);border-radius:14px;padding:16px 20px;border:1px solid rgba(255,255,255,.1);z-index:999}
+.map-legend h4{font-size:11px;color:#f97316;margin-bottom:10px;text-transform:uppercase;letter-spacing:1px;font-weight:600}
+.legend-item{display:flex;align-items:center;gap:10px;margin-bottom:6px;font-size:12px;color:#94a3b8}
+.legend-line{width:28px;height:3px;border-radius:2px}
+.legend-dot{width:10px;height:10px;border-radius:50%}
+.weather-strip{position:absolute;top:16px;left:50%;transform:translateX(-50%);background:rgba(15,23,42,.9);backdrop-filter:blur(20px);border-radius:14px;padding:12px 24px;border:1px solid rgba(255,255,255,.1);z-index:999;display:flex;gap:24px}
+.weather-item{text-align:center}
+.weather-item .w-icon{font-size:22px}
+.weather-item .w-temp{color:#f1f5f9;font-weight:600;margin-top:4px;font-size:14px}
+.weather-item .w-loc{color:#64748b;font-size:11px;margin-top:2px}
+.tips-panel{position:absolute;bottom:24px;right:24px;width:300px;background:rgba(15,23,42,.9);backdrop-filter:blur(20px);border-radius:14px;padding:16px 20px;border:1px solid rgba(255,255,255,.1);z-index:999}
+.tips-panel h4{font-size:11px;color:#f97316;margin-bottom:10px;text-transform:uppercase;letter-spacing:1px;font-weight:600;display:flex;align-items:center;gap:6px}
+.tips-panel ul{font-size:12px;color:#94a3b8;line-height:1.8;padding-left:0;list-style:none}
+.tips-panel li{display:flex;align-items:flex-start;gap:8px}
+.tips-panel li::before{content:'→';color:#f97316;flex-shrink:0}
+.tips-panel strong{color:#4ade80}
+.offline-bar{position:fixed;top:0;left:0;right:0;background:linear-gradient(135deg,#f59e0b,#f97316);color:#fff;text-align:center;padding:8px;font-size:12px;font-weight:600;z-index:9999;display:none;letter-spacing:.5px}
+.offline-bar.show{display:block}
+.cache-btn{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:linear-gradient(135deg,#22c55e,#16a34a);color:#fff;border:none;padding:12px 28px;border-radius:30px;font-size:14px;font-weight:600;cursor:pointer;z-index:9999;box-shadow:0 4px 20px rgba(34,197,94,.4);transition:all .3s;display:flex;align-items:center;gap:8px;font-family:'Noto Sans SC',sans-serif}
+.cache-btn:hover{transform:translateX(-50%) scale(1.05);box-shadow:0 6px 30px rgba(34,197,94,.5)}
+.cache-btn.saved{background:linear-gradient(135deg,#64748b,#475569);box-shadow:0 4px 15px rgba(0,0,0,.3)}
+@media(max-width:900px){.container{flex-direction:column}.sidebar{width:100%;min-width:unset;height:50vh}.map-wrap{height:50vh}.detail-panel{width:calc(100% - 32px);left:16px;right:16px}.weather-strip{display:none}.tips-panel{width:calc(100% - 48px);left:24px;right:24px;bottom:16px}}
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="sidebar">
+    <div class="sidebar-header">
+      <h1>🍂 新疆十一自驾旅行</h1>
+      <p>北疆秋季大环线 · 喀纳斯秋色 · 伊犁草原 · 独库公路</p>
+      <div class="tag-row">
+        <span class="tag"><i class="far fa-calendar"></i> 9.24 – 10.6</span>
+        <span class="tag"><i class="fas fa-users"></i> 5人自驾</span>
+        <span class="tag"><i class="fas fa-car"></i> ~3,900km</span>
+        <span class="tag"><i class="fas fa-mountain"></i> 北疆环线</span>
+      </div>
+    </div>
+    <div class="stats-bar">
+      <div class="stat"><div class="stat-val">13</div><div class="stat-label">天行程</div></div>
+      <div class="stat"><div class="stat-val">3.9k</div><div class="stat-label">公里</div></div>
+      <div class="stat"><div class="stat-val">12</div><div class="stat-label">景点</div></div>
+      <div class="stat"><div class="stat-val">~2w</div><div class="stat-label">预算/人</div></div>
+    </div>
+    <div class="day-list" id="dayList"></div>
+  </div>
+  <div class="map-wrap">
+    <div id="map"></div>
+    <div class="detail-panel" id="detailPanel"></div>
+  </div>
+</div>
+<div class="offline-bar" id="offlineBar">📡 当前离线模式 · 已缓存内容可正常查看</div>
+<button class="cache-btn" id="cacheBtn" onclick="saveOffline()"><i class="fas fa-download"></i> <span>保存到手机（离线可看）</span></button>
+
+<script>
+const days = [
+  { id:0, day:"DAY 1", date:"9月24日 · 周三", title:"抵达乌鲁木齐", coord:[43.8256,87.6168], color:"#6366f1",
+    image:"https://res.klook.com/image/upload/fl_lossy.progressive,q_60/Mobile/City/zhier67ysllab4lfzlzi.jpg",
+    route:{from:"上海 ✈️",to:"乌鲁木齐",km:"—",hours:"航班",highway:""},
+    spots:[{icon:"🏙️",type:"city",name:"乌鲁木齐",desc:"新疆首府，抵达后取车采购补给"},{icon:"🍖",type:"city",name:"五一夜市",desc:"品尝烤肉、大盘鸡、馕、酸奶"}],
+    food:"🍗 血站大盘鸡（老字号，友好路）· 五一夜市红柳烤肉 · 吴佳抓饭 · 椒麻鸡 · 馕坑肉 · 酸奶疙瘩",
+    hotel:"乌鲁木齐市区酒店 · 预估 300–500元/间",
+    tips:"机场取车，采购自驾补给（水、零食、防晒、保暖衣物）",isRest:true
+  },
+  { id:1, day:"DAY 2", date:"9月25日 · 周四", title:"乌鲁木齐 → 乌尔禾", coord:[46.0889,85.7333], color:"#f59e0b",
+    image:"https://images.unsplash.com/photo-1509316785289-025f5b846b35?w=800&h=400&fit=crop",
+    route:{from:"乌鲁木齐",to:"乌尔禾",km:"400km",hours:"4.5h",highway:"G3014奎阿高速"},
+    spots:[{icon:"⛽",type:"city",name:"克拉玛依",desc:"途经石油城，加油休息"},{icon:"👹",type:"desert",name:"魔鬼城",desc:"雅丹地貌，日落时分最美"}],
+    food:"🍖 克拉玛依烤全羊 · 油城大盘鸡 · 馕坑肉 · 凉皮子（沿途服务区就有）",
+    hotel:"乌尔禾区酒店 · 预估 200–300元/间",
+    tips:"下午3-4点入园游魔鬼城，日落光影绝佳",isRest:true
+  },
+  { id:2, day:"DAY 3", date:"9月26日 · 周五", title:"乌尔禾 → 布尔津", coord:[47.7025,86.8631], color:"#f59e0b",
+    image:"https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&h=400&fit=crop",
+    route:{from:"乌尔禾",to:"布尔津",km:"280km",hours:"3h",highway:"G217国道"},
+    spots:[{icon:"🏜️",type:"desert",name:"古尔班通古特沙漠",desc:"沿途戈壁荒漠风光"},{icon:"🌙",type:"city",name:"布尔津夜市",desc:"额尔齐斯河冷水鱼"}],
+    food:"🐟 河堤夜市烤狗鱼（必吃！）· 五道黑冷水鱼 · 哈萨克手抓肉 · 格瓦斯（俄式饮料）· 奶酪包",
+    hotel:"布尔津县城酒店 · 预估 250–400元/间",
+    tips:"中午抵达布尔津，下午休整逛夜市"
+  },
+  { id:3, day:"DAY 4", date:"9月27日 · 周六", title:"布尔津 → 喀纳斯", coord:[48.4811,87.1231], color:"#3b82f6",
+    image:"https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?w=800&h=400&fit=crop",
+    route:{from:"布尔津",to:"喀纳斯",km:"160km",hours:"3h",highway:"S232省道"},
+    spots:[{icon:"🏞️",type:"lake",name:"喀纳斯湖",desc:"乘船游湖，湖水碧蓝如宝石"},{icon:"🌊",type:"lake",name:"三湾徒步",desc:"神仙湾·月亮湾·卧龙湾，3-4h"}],
+    food:"🐑 清炖羊肉（景区内图瓦人餐馆）· 奶茶配包尔萨克 · 风干马肉 · 野蜂蜜 · 贾登峪餐厅选择较多",
+    hotel:"贾登峪酒店/小木屋 · 预估 800–1500元/间",
+    tips:"建议早出发避开排队；区间车可能排队1-2小时"
+  },
+  { id:4, day:"DAY 5", date:"9月28日 · 周日", title:"喀纳斯 → 禾木", coord:[48.5669,87.4128], color:"#22c55e",
+    image:"https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=800&h=400&fit=crop",
+    route:{from:"喀纳斯",to:"禾木",km:"60km",hours:"1.5h",highway:"景区公路"},
+    spots:[{icon:"🌅",type:"mountain",name:"神仙湾晨雾",desc:"清晨6:30-8:00拍摄晨雾"},{icon:"🏡",type:"village",name:"禾木村",desc:"中国第一村，金黄白桦林"},{icon:"⛰️",type:"mountain",name:"禾木观景台",desc:"俯瞰禾木村全景"}],
+    food:"🏡 图瓦人手抓肉 · 奶茶泡馕 · 烤羊排 · 奶疙瘩 · 村里小木屋餐馆都不踩雷",
+    hotel:"✅ 已定酒店",
+    hotelBooked:{name:"知山SAN逸境度假酒店(禾木风景区店)",room:"1张1.8大床 + 2张1.2单人床"},
+    tips:"禾木住宿务必提前预订！夜晚可观星"
+  },
+  { id:5, day:"DAY 6", date:"9月29日 · 周一", title:"禾木深度游", coord:[48.58,87.55], color:"#22c55e",
+    image:"https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?w=800&h=400&fit=crop",
+    route:{from:"禾木",to:"禾木",km:"村内",hours:"步行/骑行",highway:""},
+    spots:[{icon:"🌄",type:"mountain",name:"禾木日出",desc:"清晨6:00观景台"},{icon:"🚴",type:"grass",name:"河谷骑行",desc:"穿越白桦林和草原"},{icon:"🐴",type:"grass",name:"骑马体验",desc:"草原骑马"}],
+    food:"☕ 早起来碗奶茶 · 手抓饭 · 烤全羊（可提前和民宿预订）· 酸奶 · 晚上看星空配热饮",
+    hotel:"✅ 已定酒店（续住）",
+    hotelBooked:{name:"知山SAN逸境度假酒店(禾木风景区店)",room:"1张1.8大床 + 2张1.2单人床"},
+    tips:"休整日，慢节奏享受禾木的宁静",isRest:true
+  },
+  { id:6, day:"DAY 7", date:"9月30日 · 周二", title:"禾木 → 布尔津", coord:[47.7025,86.8631], color:"#f59e0b",
+    image:"https://images.unsplash.com/photo-1433086966358-54859d0ed716?w=800&h=400&fit=crop",
+    route:{from:"禾木",to:"布尔津",km:"160km",hours:"3h",highway:"S232省道"},
+    spots:[{icon:"🌅",type:"mountain",name:"禾木日出",desc:"清晨再看一次晨雾"},{icon:"🌙",type:"city",name:"布尔津夜市",desc:"冷水鱼，买特产"}],
+    food:"🐟 再吃一顿河堤夜市烤鱼 · 俄罗斯列巴 · 酸奶奶酪 · 买点风干肉当路上零食",
+    hotel:"布尔津县城酒店 · 预估 250–400元/间",
+    tips:"上午离开禾木，下午返回布尔津"
+  },
+  { id:7, day:"DAY 8", date:"10月1日 · 周三 🇨🇳", title:"布尔津 → 赛里木湖", coord:[44.6000,81.1667], color:"#0ea5e9",
+    image:"https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&h=400&fit=crop",
+    route:{from:"布尔津",to:"赛里木湖",km:"550km",hours:"6h",highway:"G217→G3014→G30"},
+    spots:[{icon:"🏔️",type:"lake",name:"赛里木湖",desc:"大西洋最后一滴眼泪"},{icon:"🌅",type:"lake",name:"赛里木湖日落",desc:"草原泛黄+雪山倒影"}],
+    food:"🐑 蒙古包手抓羊肉 · 奶茶 · 馕 · 赛里木湖景区内餐饮有限，建议自带干粮或在精河县吃",
+    hotel:"赛里木湖蒙古包/精河酒店 · 预估 400–800元/间",
+    tips:"今天路程较长建议早出发；海拔2000m+，夜间-5°C",isHeavy:true
+  },
+  { id:8, day:"DAY 9", date:"10月2日 · 周四", title:"赛里木湖 → 伊宁", coord:[43.9167,81.3167], color:"#8b5cf6",
+    image:"https://images.unsplash.com/photo-1473116763249-2faaef81ccda?w=800&h=400&fit=crop",
+    route:{from:"赛里木湖",to:"伊宁",km:"150km",hours:"2h",highway:"G30→G218"},
+    spots:[{icon:"🌉",type:"mountain",name:"果子沟大桥",desc:"新疆第一高桥"},{icon:"🏘️",type:"city",name:"喀赞其",desc:"蓝色小巷、手工冰淇淋"},{icon:"🕌",type:"city",name:"伊宁市区",desc:"伊犁河落日"}],
+    food:"🍦 喀赞其手工冰淇淋（必吃！）· 汉人街面肺子+米肠子 · 烤包子 · 凉皮 · 卡瓦斯（酸甜饮料）",
+    hotel:"伊宁市区酒店 · 预估 300–500元/间",
+    tips:"今天行程轻松，好好休息",isRest:true
+  },
+  { id:9, day:"DAY 10", date:"10月3日 · 周五", title:"伊宁 → 那拉提", coord:[43.3500,84.1333], color:"#10b981",
+    image:"https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=800&h=400&fit=crop",
+    route:{from:"伊宁",to:"那拉提",km:"270km",hours:"4h",highway:"G218国道"},
+    spots:[{icon:"🏔️",type:"grass",name:"那拉提草原",desc:"世界四大草原之一"},{icon:"🐴",type:"grass",name:"草原骑马",desc:"策马奔腾，雪山连绵"}],
+    food:"🐎 哈萨克手抓肉（牧家乐现宰）· 马肉纳仁 · 熏马肠 · 马奶酒 · 镇上小馆子拌面也地道",
+    hotel:"那拉提镇酒店 · 预估 400–600元/间",
+    tips:"G218沿伊犁河谷，风景优美"
+  },
+  { id:10, day:"DAY 11", date:"10月4日 · 周六", title:"那拉提 → 库尔勒", coord:[41.7167,84.9500], color:"#f97316",
+    image:"https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=800&h=400&fit=crop",
+    route:{from:"那拉提",to:"库尔勒",km:"360km",hours:"5h",highway:"G218→G217独库公路"},
+    spots:[{icon:"🛣️",type:"mountain",name:"独库公路",desc:"中国最美公路之一"},{icon:"🏔️",type:"mountain",name:"天山风光",desc:"草原到戈壁垂直景观"}],
+    food:"🍐 库尔勒香梨（当地特产，路边就有卖）· 缸子肉 · 馕坑肉 · 烤全羊 · 孔雀河边美食街",
+    hotel:"库尔勒市区酒店 · 预估 250–400元/间",
+    tips:"⚠️ 独库公路10月初可能因降雪封路，提前确认路况！",isHeavy:true
+  },
+  { id:11, day:"DAY 12", date:"10月5日 · 周日", title:"库尔勒 → 乌鲁木齐", coord:[43.8256,87.6168], color:"#6366f1",
+    image:"https://res.klook.com/image/upload/fl_lossy.progressive,q_60/Mobile/City/zhier67ysllab4lfzlzi.jpg",
+    route:{from:"库尔勒",to:"乌鲁木齐",km:"470km",hours:"5.5h",highway:"G30连霍高速"},
+    spots:[{icon:"🛍️",type:"city",name:"大巴扎",desc:"采购干果、薰衣草精油"},{icon:"🍖",type:"city",name:"告别美食",desc:"最后的大盘鸡/拌面"}],
+    food:"🍗 二道桥大盘鸡 · 烤羊排 · 干果市场买特产（葡萄干、核桃、红枣）· 最后再来一碗拌面",
+    hotel:"乌鲁木齐市区酒店 · 预估 300–500元/间",
+    tips:"下午抵达，采购特产，晚上好好休息"
+  },
+  { id:12, day:"DAY 13", date:"10月6日 · 周一", title:"乌鲁木齐 → 上海", coord:[43.8256,87.6168], color:"#6366f1",
+    image:"https://res.klook.com/image/upload/fl_lossy.progressive,q_60/Mobile/City/zhier67ysllab4lfzlzi.jpg",
+    route:{from:"乌鲁木齐 ✈️",to:"上海",km:"—",hours:"航班",highway:""},
+    spots:[{icon:"🛍️",type:"city",name:"还车",desc:"确认还车时间地点"},{icon:"✈️",type:"city",name:"返程",desc:"预留充足时间去机场"}],
+    hotel:"— 返程 —",
+    tips:"还车确认时间地点，预留充足时间去机场",isRest:true
+  }
+];
+
+const routeCoords=[
+  [43.8256,87.6168],[44.00,87.30],[44.20,87.00],[44.40,86.70],[44.60,86.40],
+  [44.80,86.10],[45.00,85.90],[45.20,85.80],[45.40,85.75],[45.60,85.72],
+  [45.80,85.70],[46.00,85.72],[46.0889,85.7333],
+  [46.30,85.90],[46.50,86.00],[46.70,86.10],[46.90,86.20],[47.10,86.35],
+  [47.30,86.50],[47.50,86.65],[47.7025,86.8631],
+  [47.85,86.92],[48.00,86.98],[48.15,87.04],[48.30,87.08],[48.4811,87.1231],
+  [48.52,87.25],[48.55,87.35],[48.5669,87.4128],
+  [48.52,87.25],[48.45,87.12],[48.30,87.08],[48.15,87.04],[48.00,86.98],
+  [47.85,86.92],[47.7025,86.8631],
+  [47.50,86.50],[47.20,86.10],[46.90,85.70],[46.60,85.30],[46.30,84.90],
+  [46.00,84.50],[45.70,84.10],[45.40,83.70],[45.10,83.30],[44.90,82.90],
+  [44.80,82.50],[44.70,82.10],[44.6000,81.1667],
+  [44.50,81.25],[44.40,81.35],[44.30,81.45],[44.20,81.55],[44.10,81.65],
+  [44.00,81.75],[43.95,81.85],[43.9167,81.3167],
+  [43.85,81.50],[43.78,81.70],[43.70,81.90],[43.62,82.10],[43.54,82.30],
+  [43.46,82.50],[43.38,82.70],[43.35,82.90],[43.3500,84.1333],
+  [43.25,84.20],[43.10,84.30],[42.95,84.40],[42.80,84.50],[42.60,84.60],
+  [42.40,84.70],[42.20,84.80],[42.00,84.85],[41.7167,84.9500],
+  [41.80,85.30],[41.95,85.70],[42.10,86.10],[42.30,86.50],[42.50,86.90],
+  [42.70,87.10],[42.90,87.30],[43.10,87.45],[43.40,87.55],[43.70,87.60],
+  [43.8256,87.6168]
+];
+
+const map=L.map('map',{center:[44.5,85],zoom:7,zoomControl:false,attributionControl:false});
+L.control.zoom({position:'bottomright'}).addTo(map);
+L.tileLayer('https://webrd01.is.autonavi.com/appmaptile?lang=zh_cn&size=1&scale=1&style=8&x={x}&y={y}&z={z}',{maxZoom:18}).addTo(map);
+
+L.polyline(routeCoords,{color:'#f97316',weight:10,opacity:.3,smoothFactor:1}).addTo(map);
+L.polyline(routeCoords,{color:'#f97316',weight:4,opacity:.9,smoothFactor:1,lineCap:'round',lineJoin:'round'}).addTo(map);
+
+const markers=[];
+days.forEach((d,i)=>{
+  const icon=L.divIcon({className:'custom-marker',html:`<div class="marker-pin" style="background:${d.color}"><span>${i+1}</span></div>`,iconSize:[36,36],iconAnchor:[18,36],popupAnchor:[0,-40]});
+  const marker=L.marker(d.coord,{icon}).addTo(map);
+  marker.bindPopup(`<div style="font-family:'Noto Sans SC',sans-serif;min-width:200px;padding:4px"><div style="font-size:11px;color:#94a3b8;font-weight:700;letter-spacing:1px">${d.day}</div><div style="font-size:16px;font-weight:700;color:#1e293b;margin:6px 0">${d.title}</div><div style="font-size:12px;color:#64748b">${d.date}</div>${d.route.km!=='—'?`<div style="margin-top:8px;font-size:13px;color:#475569">🚗 ${d.route.from} → ${d.route.to}<br>${d.route.km} · ${d.route.hours}</div>`:''}</div>`,{className:'custom-popup',maxWidth:280});
+  marker.on('click',()=>showDetail(d));
+  markers.push(marker);
+});
+
+const dayList=document.getElementById('dayList');
+days.forEach((d,i)=>{
+  const card=document.createElement('div');
+  card.className=`day-card${d.isRest?' rest-day':''}${d.isHeavy?' heavy-day':''}`;
+  const spotTags=d.spots.map(s=>`<span class="spot">${s.icon} ${s.name}</span>`).join('');
+  card.innerHTML=`<div class="day-top"><span class="day-num">${d.day}</span><span class="day-date">${d.date}</span></div><div class="day-title">${d.title}</div><div class="day-meta">${d.route.km!=='—'?`<span><i class="fas fa-road"></i> ${d.route.km}</span><span><i class="fas fa-clock"></i> ${d.route.hours}</span>${d.route.highway?`<span><i class="fas fa-route"></i> ${d.route.highway}</span>`:''}`:'<span><i class="fas fa-map-marker-alt"></i> 休整日</span>'}</div><div class="day-highlight">${spotTags}</div>${d.tips?`<div class="day-warning"><i class="fas fa-lightbulb"></i> ${d.tips}</div>`:''}`;
+  card.addEventListener('click',()=>{document.querySelectorAll('.day-card').forEach(c=>c.classList.remove('active'));card.classList.add('active');showDetail(d);map.flyTo(d.coord,8,{duration:1.2});markers[i].openPopup();});
+  dayList.appendChild(card);
+});
+
+function showDetail(d){
+  const panel=document.getElementById('detailPanel');
+  const spotsHTML=d.spots.map(s=>`<div class="spot-card"><div class="spot-icon ${s.type}">${s.icon}</div><div class="spot-info"><h4>${s.name}</h4><p>${s.desc}</p></div></div>`).join('');
+
+  let hotelRecHTML='';
+  if(d.hotelBooked){
+    hotelRecHTML=`<div class="hotel-booked-detail">
+      <div class="hb-name">${d.hotelBooked.name}</div>
+      <div class="hb-room">🛏️ ${d.hotelBooked.room}</div>
+    </div>`;
+  }
+
+  panel.innerHTML=`
+    <div class="detail-hero" style="background-image:url('${d.image}')">
+      <div class="detail-hero-title"><h2>${d.title}</h2><div class="sub">${d.day} · ${d.date}</div></div>
+      <button class="detail-close" onclick="document.getElementById('detailPanel').classList.remove('show')"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="detail-body">
+      ${d.route.km!=='—'?`<div class="route-box"><div class="from-to"><span>${d.route.from}</span><span class="arrow"><i class="fas fa-arrow-right"></i></span><span>${d.route.to}</span></div><div class="route-detail"><span><i class="fas fa-road"></i> ${d.route.km}</span><span><i class="fas fa-clock"></i> ${d.route.hours}</span></div>${d.route.highway?`<div style="margin-top:8px;font-size:12px;color:#94a3b8"><i class="fas fa-route" style="color:#f97316;margin-right:6px"></i>${d.route.highway}</div>`:''}</div>`:''}
+      <div class="detail-section"><h3><i class="fas fa-map-marked-alt"></i> 景点亮点</h3>${spotsHTML}</div>
+      <div class="detail-section"><div class="hotel-box${d.hotelBooked?' booked':''}"><h4><i class="fas fa-hotel"></i> ${d.hotelBooked?'已定酒店':'住宿推荐'}</h4>${d.hotelBooked?'<span class="booked-badge"><i class="fas fa-check-circle"></i> 已预订</span>':''}<p>${d.hotel}</p>${hotelRecHTML}</div></div>
+      <div class="detail-section"><div class="food-box"><h4><i class="fas fa-utensils"></i> 美食推荐</h4><p>${d.food||'当地特色美食'}</p></div></div>
+      ${d.tips?`<div class="detail-section"><h3><i class="fas fa-exclamation-triangle"></i> 温馨提示</h3><p style="color:#fbbf24;font-size:13px;line-height:1.8">${d.tips}</p></div>`:''}
+    </div>`;
+  panel.classList.add('show');
+}
+
+const weatherData=[{loc:"喀纳斯",icon:"🌨️",temp:"5~15°C"},{loc:"赛里木湖",icon:"❄️",temp:"3~12°C"},{loc:"伊宁",icon:"🌤️",temp:"8~20°C"},{loc:"库尔勒",icon:"☀️",temp:"10~22°C"}];
+const ws=document.createElement('div');ws.className='weather-strip';
+weatherData.forEach(w=>{ws.innerHTML+=`<div class="weather-item"><div class="w-icon">${w.icon}</div><div class="w-temp">${w.temp}</div><div class="w-loc">${w.loc}</div></div>`;});
+document.querySelector('.map-wrap').appendChild(ws);
+
+const legend=document.createElement('div');legend.className='map-legend';
+legend.innerHTML=`<h4>图例</h4><div class="legend-item"><div class="legend-line" style="background:#f97316"></div>自驾路线</div><div class="legend-item"><div class="legend-dot" style="background:#3b82f6"></div>湖泊</div><div class="legend-item"><div class="legend-dot" style="background:#22c55e"></div>草原/村庄</div><div class="legend-item"><div class="legend-dot" style="background:#f59e0b"></div>沙漠/雅丹</div><div class="legend-item"><div class="legend-dot" style="background:#6366f1"></div>城市</div>`;
+document.querySelector('.map-wrap').appendChild(legend);
+
+const tips=document.createElement('div');tips.className='tips-panel';
+tips.innerHTML=`<h4><i class="fas fa-suitcase"></i> 自驾必备</h4><ul><li>禾木/喀纳斯住宿<strong>现在就订</strong></li><li>油量低于<strong>半箱就加</strong></li><li>带<strong>现金</strong>，ETC通道少</li><li>独库公路<strong>提前查路况</strong></li><li>保暖衣物<strong>必带</strong></li></ul>`;
+document.querySelector('.map-wrap').appendChild(tips);
+
+map.on('click',()=>{document.getElementById('detailPanel').classList.remove('show');});
+setTimeout(()=>{document.querySelector('.day-card').click();},500);
+
+// === PWA 离线缓存 ===
+// 方式1: Service Worker（推荐，HTTP/HTTPS 下可用）
+if('serviceWorker' in navigator){
+  const swCode=`
+    const CACHE='xinjiang-trip-v1';
+    const ASSETS=['./','https://unpkg.com/leaflet@1.9.4/dist/leaflet.css','https://unpkg.com/leaflet@1.9.4/dist/leaflet.js','https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css'];
+    self.addEventListener('install',e=>{e.waitUntil(caches.open(CACHE).then(c=>c.addAll(ASSETS)).then(()=>self.skipWaiting()))});
+    self.addEventListener('activate',e=>{e.waitUntil(self.clients.claim())});
+    self.addEventListener('fetch',e=>{e.respondWith(caches.match(e.request).then(r=>r||fetch(e.request).then(res=>{if(res.ok){const clone=res.clone();caches.open(CACHE).then(c=>c.put(e.request,clone))}return res}).catch(()=>caches.match('./'))))});
+  `;
+  const blob=new Blob([swCode],{type:'application/javascript'});
+  navigator.serviceWorker.register(URL.createObjectURL(blob),{scope:'./'}).catch(()=>{});
+}
+
+// 方式2: localStorage 兜底（微信/小程序/浏览器都能用）
+try{
+  const html=document.documentElement.outerHTML;
+  localStorage.setItem('xinjiang_trip_cache',html);
+  localStorage.setItem('xinjiang_trip_cache_time',Date.now());
+}catch(e){}
+// 离线时如果网络请求失败，尝试从缓存恢复
+window.addEventListener('load',()=>{
+  if(!navigator.onLine){
+    const cached=localStorage.getItem('xinjiang_trip_cache');
+    if(cached&&document.documentElement.outerHTML.length<1000){
+      document.open();document.write(cached);document.close();
+    }
+  }
+});
+
+// 离线状态提示
+function updateOnlineStatus(){
+  const bar=document.getElementById('offlineBar');
+  if(bar) bar.classList.toggle('show',!navigator.onLine);
+}
+window.addEventListener('online',updateOnlineStatus);
+window.addEventListener('offline',updateOnlineStatus);
+updateOnlineStatus();
+
+// 手动保存到手机（点击按钮触发）
+function saveOffline(){
+  try{
+    const html=document.documentElement.outerHTML;
+    localStorage.setItem('xinjiang_trip_cache',html);
+    localStorage.setItem('xinjiang_trip_cache_time',new Date().toLocaleString('zh-CN'));
+    const btn=document.getElementById('cacheBtn');
+    btn.classList.add('saved');
+    btn.innerHTML='<i class="fas fa-check"></i> <span>已保存！断网也能看</span>';
+    setTimeout(()=>{btn.style.opacity='0';btn.style.pointerEvents='none'},2000);
+  }catch(e){
+    alert('保存失败，请尝试用浏览器打开后保存');
+  }
+}
+
+// 检查是否已缓存，更新按钮状态
+(function(){
+  const cached=localStorage.getItem('xinjiang_trip_cache');
+  const cacheTime=localStorage.getItem('xinjiang_trip_cache_time');
+  if(cached&&cacheTime){
+    const btn=document.getElementById('cacheBtn');
+    if(btn){
+      btn.classList.add('saved');
+      btn.innerHTML=`<i class="fas fa-check"></i> <span>已保存 (${cacheTime})</span>`;
+    }
+  }
+})();
+</script>
+<style>
+.leaflet-popup-content-wrapper{border-radius:14px!important;box-shadow:0 10px 40px rgba(0,0,0,.2)!important}
+.custom-popup .leaflet-popup-content{margin:14px 18px!important}
+.leaflet-control-zoom a{background:rgba(15,23,42,.9)!important;color:#f97316!important;border:1px solid rgba(255,255,255,.1)!important}
+.leaflet-tile-pane{filter:brightness(.8) contrast(1.1) saturate(.9)}
+</style>
+</body>
+</html>
