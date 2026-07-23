@@ -150,7 +150,6 @@ body{font-family:'Noto Sans SC','Microsoft YaHei',sans-serif;background:#f0f7ff;
   .m-sheet.collapsed{height:52px;border-radius:24px 24px 0 0}
   .m-sheet.collapsed .m-header,
   .m-sheet.collapsed .m-tabs,
-  .m-sheet.collapsed .m-hero-showcase,
   .m-sheet.collapsed .m-content{display:none}
   .m-sheet.collapsed .m-handle{padding:14px 0 10px}
 
@@ -1007,6 +1006,18 @@ setTimeout(()=>{document.querySelector('.day-card').click();},500);
     };
     // 更新标签
     heroLabel.querySelector('span').textContent=d.title;
+  }
+
+  // Sheet展开时重新加载大图
+  const sheetEl=document.getElementById('mSheet');
+  if(sheetEl){
+    const observer=new MutationObserver(()=>{
+      if(sheetEl.classList.contains('expanded')){
+        updateHeroImage(activeDay);
+      }
+    });
+    observer.observe(sheetEl,{attributes:true,attributeFilter:['class']});
+  }
   }
 
   // 渲染某天的时间轴
