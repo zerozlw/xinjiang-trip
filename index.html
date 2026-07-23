@@ -118,7 +118,103 @@ body{font-family:'Noto Sans SC','Microsoft YaHei',sans-serif;background:#0a0f1a;
 .cache-btn{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:linear-gradient(135deg,#22c55e,#16a34a);color:#fff;border:none;padding:12px 28px;border-radius:30px;font-size:14px;font-weight:600;cursor:pointer;z-index:9999;box-shadow:0 4px 20px rgba(34,197,94,.4);transition:all .3s;display:flex;align-items:center;gap:8px;font-family:'Noto Sans SC',sans-serif}
 .cache-btn:hover{transform:translateX(-50%) scale(1.05);box-shadow:0 6px 30px rgba(34,197,94,.5)}
 .cache-btn.saved{background:linear-gradient(135deg,#64748b,#475569);box-shadow:0 4px 15px rgba(0,0,0,.3)}
-@media(max-width:900px){.container{flex-direction:column}.sidebar{width:100%;min-width:unset;height:50vh}.map-wrap{height:50vh}.detail-panel{width:calc(100% - 32px);left:16px;right:16px}.weather-strip{display:none}.tips-panel{width:calc(100% - 48px);left:24px;right:24px;bottom:16px}}
+
+/* ===== 移动端适配 ===== */
+@media(max-width:768px){
+  body{overflow:auto;height:auto}
+  .container{flex-direction:column;height:auto;min-height:100vh}
+
+  /* 侧边栏：全宽，自动高度 */
+  .sidebar{width:100%;min-width:unset;height:auto;max-height:none;border-right:none;position:relative;z-index:1}
+  .sidebar-header{padding:20px 16px 16px}
+  .sidebar-header h1{font-size:20px}
+  .sidebar-header p{font-size:12px}
+  .tag-row{gap:6px;margin-top:8px}
+  .tag{font-size:11px;padding:3px 10px}
+
+  /* 统计栏：两行排列 */
+  .stats-bar{padding:12px 16px;gap:6px;flex-wrap:wrap}
+  .stat{min-width:calc(50% - 6px);flex:unset}
+  .stat-val{font-size:18px}
+  .stat-label{font-size:10px}
+
+  /* 日程列表：全宽卡片 */
+  .day-list{padding:8px 0;overflow-y:auto;max-height:55vh}
+  .day-card{margin:6px 12px;padding:14px 16px}
+  .day-title{font-size:14px}
+  .day-meta{gap:10px;font-size:11px;flex-wrap:wrap}
+  .day-highlight .spot{font-size:10px;padding:3px 8px}
+  .day-warning{font-size:10px;padding:6px 10px}
+
+  /* 地图区域：固定高度 */
+  .map-wrap{height:45vh;min-height:300px;position:sticky;top:0;z-index:0}
+
+  /* 详情面板：全屏弹出 */
+  .detail-panel{position:fixed;top:0;left:0;right:0;bottom:0;width:100%;max-height:100vh;border-radius:0;z-index:2000;animation:slideInMobile .3s ease}
+  @keyframes slideInMobile{from{transform:translateY(100%)}to{transform:translateY(0)}}
+  .detail-hero{height:200px}
+  .detail-hero-title h2{font-size:20px}
+  .detail-body{padding:16px;max-height:calc(100vh - 200px);overflow-y:auto;-webkit-overflow-scrolling:touch}
+  .detail-close{width:36px;height:36px;font-size:16px;top:12px;right:12px;background:rgba(0,0,0,.6)}
+
+  /* 景点卡片：紧凑 */
+  .spot-card{padding:12px;gap:10px}
+  .spot-icon{width:36px;height:36px;font-size:16px}
+  .spot-info h4{font-size:13px}
+  .spot-info p{font-size:11px}
+
+  /* 酒店/美食框 */
+  .hotel-box,.food-box{padding:12px}
+  .hotel-box h4,.food-box h4{font-size:12px}
+  .hotel-box p,.food-box p{font-size:11px}
+  .hotel-booked-detail .hb-name{font-size:13px}
+  .hotel-booked-detail .hb-room{font-size:11px}
+
+  /* 路线框 */
+  .route-box{padding:12px}
+  .route-box .from-to{font-size:14px}
+  .route-box .route-detail{font-size:12px;gap:12px}
+
+  /* 天气条：隐藏（手机屏幕不够） */
+  .weather-strip{display:none}
+
+  /* 小贴士：底部全宽 */
+  .tips-panel{position:relative;width:100%;bottom:auto;right:auto;left:auto;border-radius:0;margin-top:8px;border-left:none;border-right:none}
+
+  /* 地图图例：隐藏 */
+  .map-legend{display:none}
+
+  /* 缓存按钮：调整位置避免遮挡 */
+  .cache-btn{bottom:16px;padding:10px 24px;font-size:13px}
+
+  /* 滚动条优化 */
+  .day-list::-webkit-scrollbar{width:3px}
+  .detail-body::-webkit-scrollbar{width:3px}
+}
+
+/* 超小屏幕（iPhone SE等） */
+@media(max-width:380px){
+  .sidebar-header h1{font-size:18px}
+  .stats-bar{padding:10px 12px}
+  .stat-val{font-size:16px}
+  .day-card{margin:4px 8px;padding:12px}
+  .detail-hero{height:160px}
+}
+
+/* 横屏手机 */
+@media(max-width:768px) and (orientation:landscape){
+  .container{flex-direction:row}
+  .sidebar{width:45%;height:100vh;border-right:1px solid rgba(255,255,255,.06)}
+  .map-wrap{width:55%;height:100vh;position:relative}
+  .detail-panel{width:55%;border-radius:0}
+  .tips-panel{display:none}
+}
+
+/* 平板竖屏 */
+@media(min-width:769px) and (max-width:1024px){
+  .sidebar{width:360px;min-width:360px}
+  .detail-panel{width:340px}
+}
 </style>
 </head>
 <body>
@@ -350,6 +446,45 @@ tips.innerHTML=`<h4><i class="fas fa-suitcase"></i> 自驾必备</h4><ul><li>禾
 document.querySelector('.map-wrap').appendChild(tips);
 
 map.on('click',()=>{document.getElementById('detailPanel').classList.remove('show');});
+
+// 移动端：详情面板支持下滑关闭
+(function(){
+  const panel=document.getElementById('detailPanel');
+  let startY=0,dragging=false;
+  panel.addEventListener('touchstart',e=>{
+    if(e.target.closest('.detail-body')&&e.target.closest('.detail-body').scrollTop>0)return;
+    startY=e.touches[0].clientY;dragging=true;
+  },{passive:true});
+  panel.addEventListener('touchmove',e=>{
+    if(!dragging)return;
+    const dy=e.touches[0].clientY-startY;
+    if(dy>80){panel.classList.remove('show');dragging=false;}
+  },{passive:true});
+  panel.addEventListener('touchend',()=>{dragging=false},{passive:true});
+})();
+
+// 移动端：侧边栏和地图之间可拖拽分隔（上下布局时）
+(function(){
+  if(window.innerWidth>768)return;
+  const mapWrap=document.querySelector('.map-wrap');
+  const sidebar=document.querySelector('.sidebar');
+  let touchStartY=0,touchStartHeight=0;
+  mapWrap.addEventListener('touchstart',e=>{
+    if(e.touches.length!==1)return;
+    touchStartY=e.touches[0].clientY;
+    touchStartHeight=parseInt(getComputedStyle(mapWrap).height);
+  },{passive:true});
+  mapWrap.addEventListener('touchmove',e=>{
+    if(!touchStartY)return;
+    const dy=touchStartY-e.touches[0].clientY;
+    const newH=Math.max(150,Math.min(window.innerHeight*0.8,touchStartHeight+dy));
+    mapWrap.style.height=newH+'px';
+    sidebar.style.height=(window.innerHeight-newH)+'px';
+    map.invalidateSize();
+  },{passive:true});
+  mapWrap.addEventListener('touchend',()=>{touchStartY=0},{passive:true});
+})();
+
 setTimeout(()=>{document.querySelector('.day-card').click();},500);
 
 // === PWA 离线缓存 ===
