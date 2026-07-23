@@ -657,7 +657,7 @@ const routeCoords=[
   [43.6426,87.3919],[43.7262,87.4966],[43.7443,87.5426],[43.7606,87.5855],[43.7707,87.6118],[43.7826,87.6172]
 ];
 
-const map=window.map=L.map('map',{center:[44.8,84.5],zoom:6,zoomControl:false,attributionControl:false});
+const map=window.map=L.map('map',{center:[45.2,84.5],zoom:6,zoomControl:false,attributionControl:false});
 L.control.zoom({position:'bottomright'}).addTo(map);
 L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:18,attribution:'© OpenStreetMap'}).addTo(map);
 
@@ -871,7 +871,6 @@ setTimeout(()=>{document.querySelector('.day-card').click();},500);
   // 切换天数
   function switchDay(idx){
     activeDay=idx;
-    // 重置内容区滑动
     contentEl.style.transition='transform .3s cubic-bezier(.32,.72,0,1)';
     contentEl.style.transform='';
     setTimeout(()=>{contentEl.style.transition='';},300);
@@ -887,7 +886,20 @@ setTimeout(()=>{document.querySelector('.day-card').click();},500);
     highlightMarker(idx);
     showDaySpots(idx);
     const d=days[idx];
-    if(d&&window.map){window.map.flyTo(d.coord,8,{duration:1})}
+    if(!d||!window.map)return;
+
+    // 半开时地图往上偏移（避免被sheet遮挡）
+    const sheet=document.getElementById('mSheet');
+    const isExpanded=sheet&&sheet.classList.contains('expanded');
+    const vh=window.innerHeight;
+    if(isExpanded){
+      // 全开：地图全屏，正常居中
+      window.map.flyTo(d.coord,8,{duration:1});
+    }else{
+      // 半开/收起：地图只露上面35-40%，偏移中心
+      const offset=vh*0.18/vh; // 约0.18度偏移
+      window.map.flyTo([d.coord[0]+offset,d.coord[1]],8,{duration:1});
+    }
   }
 
   // 切换Tab时：只显示当天标记，同坐标的其他标记隐藏
