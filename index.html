@@ -900,69 +900,96 @@ setTimeout(()=>{document.querySelector('.day-card').click();},500);
   detailClose.addEventListener('click',closeMobileDetail);
   overlay.addEventListener('click',closeMobileDetail);
 
-  // Bottom Sheet 三态切换: collapsed ↔ peek ↔ expanded
+  // Bottom Sheet 手势控制: collapsed ↔ peek ↔ expanded
   (function(){
     const handle=document.getElementById('mHandle');
-    let startY=0,dragging=false,sheetH=0;
+    const content=document.getElementById('mContent');
+    let startY=0,dragging=false,state='peek';
 
-    // 点击手柄切换状态
-    handle.addEventListener('click',()=>{
-      if(sheet.classList.contains('collapsed')){
-        sheet.classList.remove('collapsed');
-      }else if(sheet.classList.contains('expanded')){
-        sheet.classList.add('collapsed');
-        sheet.classList.remove('expanded');
-      }else{
-        sheet.classList.add('expanded');
-      }
-    });
+    function getState(){
+      if(sheet.classList.contains('expanded'))return 'expanded';
+      if(sheet.classList.contains('collapsed'))return 'collapsed';
+      return 'peek';
+    }
+    function setState(s){
+      sheet.classList.remove('expanded','collapsed');
+      if(s==='expanded')sheet.classList.add('expanded');
+      if(s==='collapsed')sheet.classList.add('collapsed');
+      state=s;
+    }
 
-    // 拖拽手柄切换
-    handle.addEventListener('touchstart',e=>{
+    // 所有手势从 handle 或 content 区域触发
+    function onTouchStart(e){
+      // 如果内容区在滚动中且不在顶部，不拦截
+      if(e.target.closest('.m-content')&&content.scrollTop>5)return;
       startY=e.touches[0].clientY;
-      sheetH=sheet.offsetHeight;
       dragging=true;
+      state=getState();
       sheet.style.transition='none';
-    },{passive:true});
-    handle.addEventListener('touchmove',e=>{
+    }
+    function onTouchMove(e){
       if(!dragging)return;
       const dy=e.touches[0].clientY-startY;
       const vh=window.innerHeight;
-      if(sheet.classList.contains('expanded')){
-        if(dy>0){
-          const h=Math.max(vh*.65,sheetH+dy);
+      const peekH=vh*.65;
+      const expandedH=vh*.92;
+      const collapsedH=52;
+
+      if(state==='collapsed'){
+        // 收起态：只能上拉到peek
+        if(dy<0){
+          const h=Math.min(peekH,collapsedH+Math.abs(dy));
           sheet.style.height=h+'px';
         }
-      }else if(sheet.classList.contains('collapsed')){
+      }else if(state==='peek'){
+        // 半开态：上拉到expanded，下拉到collapsed
         if(dy<0){
-          const h=Math.min(vh*.65,52+Math.abs(dy));
+          const h=Math.min(expandedH,peekH+Math.abs(dy)*.6);
+          sheet.style.height=h+'px';
+        }else{
+          const h=Math.max(collapsedH,peekH-dy*.6);
           sheet.style.height=h+'px';
         }
       }else{
-        if(dy<0){
-          const h=Math.min(vh*.92,sheetH+Math.abs(dy)*.5);
-          sheet.style.height=h+'px';
-        }else{
-          const h=Math.max(52,sheetH-dy);
+        // 全开态：只能下拉到peek
+        if(dy>0){
+          const h=Math.max(peekH,expandedH-dy*.6);
           sheet.style.height=h+'px';
         }
       }
-    },{passive:true});
-    handle.addEventListener('touchend',e=>{
+    }
+    function onTouchEnd(e){
       if(!dragging)return;
       dragging=false;
       sheet.style.transition='';
       sheet.style.height='';
       const dy=e.changedTouches[0].clientY-startY;
-      if(sheet.classList.contains('expanded')){
-        if(dy>60){sheet.classList.remove('expanded');}
-      }else if(sheet.classList.contains('collapsed')){
-        if(dy<-40){sheet.classList.remove('collapsed');}
+      const threshold=50;
+
+      if(state==='collapsed'){
+        if(dy<-threshold)setState('peek');
+      }else if(state==='peek'){
+        if(dy<-threshold)setState('expanded');
+        else if(dy>threshold)setState('collapsed');
       }else{
-        if(dy<-50)sheet.classList.add('expanded');
-        else if(dy>50)sheet.classList.add('collapsed');
+        if(dy>threshold)setState('peek');
       }
-    },{passive:true});
+    }
+
+    handle.addEventListener('touchstart',onTouchStart,{passive:true});
+    handle.addEventListener('touchmove',onTouchMove,{passive:true});
+    handle.addEventListener('touchend',onTouchEnd,{passive:true});
+    content.addEventListener('touchstart',onTouchStart,{passive:true});
+    content.addEventListener('touchmove',onTouchMove,{passive:true});
+    content.addEventListener('touchend',onTouchEnd,{passive:true});
+
+    // 点击手柄切换
+    handle.addEventListener('click',()=>{
+      const s=getState();
+      if(s==='collapsed')setState('peek');
+      else if(s==='peek')setState('expanded');
+      else setState('collapsed');
+    });
   })();
 
   // 详情面板拖拽关闭
