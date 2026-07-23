@@ -248,6 +248,22 @@ body{font-family:'Noto Sans SC','Microsoft YaHei',sans-serif;background:#f0f7ff;
   }
   .m-sheet.expanded .m-hero-label{opacity:1}
 
+  /* 地点大图（全开时跟随内容滚动） */
+  .m-day-hero{
+    width:100%;height:200px;position:relative;overflow:hidden;
+    margin-bottom:12px;border-radius:0;
+  }
+  .m-day-hero img{width:100%;height:100%;object-fit:cover}
+  .m-day-hero-overlay{
+    position:absolute;bottom:0;left:0;right:0;height:60px;
+    background:linear-gradient(transparent,#f8fbff);
+  }
+  .m-day-hero-info{
+    position:absolute;bottom:10px;left:16px;
+  }
+  .m-day-hero-info h3{font-size:18px;font-weight:700;color:#0a2540}
+  .m-day-hero-info span{font-size:12px;color:#5a6f8c}
+
   /* 每日标题 */
   .m-day-header{
     padding:16px 20px 8px;
@@ -468,12 +484,11 @@ body{font-family:'Noto Sans SC','Microsoft YaHei',sans-serif;background:#f0f7ff;
     </div>
   </div>
   <div class="m-tabs" id="mTabs"></div>
-  <div class="m-content" id="mContent">
-    <div class="m-hero-showcase" id="mHeroShowcase">
-      <div class="m-hero-overlay"></div>
-      <div class="m-hero-label" id="mHeroLabel"><i class="fas fa-camera"></i> <span></span></div>
-    </div>
+  <div class="m-hero-showcase" id="mHeroShowcase">
+    <div class="m-hero-overlay"></div>
+    <div class="m-hero-label" id="mHeroLabel"><i class="fas fa-camera"></i> <span></span></div>
   </div>
+  <div class="m-content" id="mContent"></div>
 </div>
 
 <!-- ===== 移动端详情弹窗 ===== -->
@@ -906,10 +921,8 @@ setTimeout(()=>{document.querySelector('.day-card').click();},500);
       window.map.flyTo(d.coord,8,{duration:1});
     }else{
       // 半开：Sheet占65%，地图只露上面35%
-      // 焦点往上移，让标记出现在可见区域中心
-      const mapVisibleH=window.innerHeight*0.35;
-      const centerOffset=mapVisibleH*0.3/111320; // 约屏幕可见区中心偏上
-      window.map.flyTo([d.coord[0]+centerOffset,d.coord[1]],8,{duration:1});
+      // 焦点上移让地点标记在可见区域偏上位置
+      window.map.flyTo([d.coord[0]+0.25,d.coord[1]],8,{duration:1});
     }
   }
 
@@ -1025,6 +1038,9 @@ setTimeout(()=>{document.querySelector('.day-card').click();},500);
     if(!d)return;
     let html='';
 
+    // 地点大图（全开时跟随内容滚动）
+    html+=`<div class="m-day-hero"><img src="${d.image}" alt="${d.title}"><div class="m-day-hero-overlay"></div><div class="m-day-hero-info"><h3>${d.title}</h3><span>${d.day} · ${d.date}</span></div></div>`;
+
     // 每日标题
     html+=`<div class="m-day-header"><h3>${d.title}</h3><span class="m-date">${d.date}</span></div>`;
 
@@ -1043,7 +1059,7 @@ setTimeout(()=>{document.querySelector('.day-card').click();},500);
           <div class="m-dot" style="background:${d.color}">${i+1}</div>
           ${!isLast?'<div class="m-line"></div>':''}
         </div>
-        <div class="m-card" onclick="window.mShowDetail(${idx})">
+        <div class="m-card">
           ${hasImg?`<img class="m-card-img" src="${s.img}" alt="">`:''}
           <div class="m-card-text">
             <div class="m-card-title">${s.icon} ${s.name}</div>
