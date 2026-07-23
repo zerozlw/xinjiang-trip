@@ -19,7 +19,7 @@ body{font-family:'Noto Sans SC','Microsoft YaHei',sans-serif;background:#0a0f1a;
 .container{display:flex;height:100vh}
 .sidebar{width:420px;min-width:420px;background:linear-gradient(180deg,#131a2e 0%,#0a0f1a 100%);overflow-y:auto;z-index:1000;border-right:1px solid rgba(255,255,255,.06);display:flex;flex-direction:column}
 .map-wrap{flex:1;position:relative}
-#map{width:100%;height:100%;z-index:1;background:#1a1f2e}
+#map{width:100%;height:100%;z-index:1;background:#e8e8e8}
 .sidebar-header{padding:28px 24px 20px;background:linear-gradient(135deg,#f97316 0%,#dc2626 50%,#f59e0b 100%);flex-shrink:0;position:relative;overflow:hidden}
 .sidebar-header h1{font-size:24px;font-weight:700;color:#fff;margin-bottom:6px;position:relative}
 .sidebar-header p{font-size:13px;color:rgba(255,255,255,.9);line-height:1.6;position:relative}
@@ -615,7 +615,7 @@ const routeCoords=[
 
 const map=window.map=L.map('map',{center:[44.5,85],zoom:7,zoomControl:false,attributionControl:false});
 L.control.zoom({position:'bottomright'}).addTo(map);
-L.tileLayer('https://webrd01.is.autonavi.com/appmaptile?lang=zh_cn&size=1&scale=1&style=8&x={x}&y={y}&z={z}',{maxZoom:18}).addTo(map);
+L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:18,attribution:'© OpenStreetMap'}).addTo(map);
 
 L.polyline(routeCoords,{color:'#f97316',weight:10,opacity:.3,smoothFactor:1}).addTo(map);
 L.polyline(routeCoords,{color:'#f97316',weight:4,opacity:.9,smoothFactor:1,lineCap:'round',lineJoin:'round'}).addTo(map);
@@ -833,8 +833,22 @@ setTimeout(()=>{document.querySelector('.day-card').click();},500);
     if(tab)tab.scrollIntoView({behavior:'smooth',inline:'center',block:'nearest'});
     renderDay(idx);
     updateHeroImage(idx);
+    highlightMarker(idx);
     const d=days[idx];
     if(d&&window.map){window.map.flyTo(d.coord,8,{duration:1})}
+  }
+
+  // 高亮当前天的标记，其他变暗
+  function highlightMarker(idx){
+    markers.forEach((m,i)=>{
+      const el=m.getElement();
+      if(!el)return;
+      const pin=el.querySelector('.marker-pin');
+      if(!pin)return;
+      pin.classList.remove('marker-dimmed','marker-active');
+      if(i===idx)pin.classList.add('marker-active');
+      else pin.classList.add('marker-dimmed');
+    });
   }
 
   // 更新景点大图
@@ -1093,6 +1107,7 @@ setTimeout(()=>{document.querySelector('.day-card').click();},500);
   // 初始化第一天
   renderDay(0);
   updateHeroImage(0);
+  highlightMarker(0);
 })();
 
 // === PWA 离线缓存 ===
@@ -1166,7 +1181,10 @@ function saveOffline(){
 .leaflet-popup-content-wrapper{border-radius:14px!important;box-shadow:0 10px 40px rgba(0,0,0,.2)!important}
 .custom-popup .leaflet-popup-content{margin:14px 18px!important}
 .leaflet-control-zoom a{background:rgba(15,23,42,.9)!important;color:#f97316!important;border:1px solid rgba(255,255,255,.1)!important}
-.leaflet-tile-pane{filter:brightness(1) contrast(1) saturate(1)}
+.leaflet-tile-pane{filter:none}
+.marker-pin{transition:transform .3s,opacity .3s,box-shadow .3s}
+.marker-dimmed{opacity:.35!important;transform:scale(.7)!important;box-shadow:none!important}
+.marker-active{transform:scale(1.25)!important;box-shadow:0 4px 20px rgba(0,0,0,.4)!important;z-index:9999!important}
 </style>
 </body>
 </html>
