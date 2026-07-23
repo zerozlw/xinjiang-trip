@@ -299,8 +299,14 @@ body{font-family:'Noto Sans SC','Microsoft YaHei',sans-serif;background:#f0f7ff;
     transition:transform .15s,box-shadow .2s;
     -webkit-tap-highlight-color:transparent;
     box-shadow:0 1px 6px rgba(0,120,200,.04);
+    display:flex;gap:12px;align-items:flex-start;
   }
   .m-card:active{transform:scale(.98);box-shadow:0 0 0 rgba(0,0,0,0)}
+  .m-card-img{
+    width:64px;height:64px;border-radius:12px;object-fit:cover;flex-shrink:0;
+    box-shadow:0 1px 4px rgba(0,0,0,.1);
+  }
+  .m-card-text{flex:1;min-width:0}
   .m-card-title{font-size:15px;font-weight:600;color:#0a2540;margin-bottom:3px}
   .m-card-desc{font-size:12px;color:#7c8db5;line-height:1.5}
   .m-card-tag{
@@ -489,7 +495,7 @@ const days = [
     landmark:"https://images.unsplash.com/photo-1699794999362-2d5282915809?w=200&h=200&fit=crop",
     image:"https://res.klook.com/image/upload/fl_lossy.progressive,q_60/Mobile/City/zhier67ysllab4lfzlzi.jpg",
     route:{from:"上海 ✈️",to:"乌鲁木齐",km:"—",hours:"航班",highway:""},
-    spots:[{icon:"🏙️",type:"city",name:"乌鲁木齐",desc:"新疆首府，抵达后取车采购补给"},{icon:"🍖",type:"city",name:"五一夜市",desc:"品尝烤肉、大盘鸡、馕、酸奶"}],
+    spots:[{icon:"🏙️",type:"city",name:"大巴扎",desc:"国际大巴扎，采购干果特产",img:"https://images.unsplash.com/photo-1699794999416-1b7b58b842dc?w=200&h=200&fit=crop"},{icon:"🍖",type:"city",name:"五一夜市",desc:"品尝烤肉、大盘鸡、馕、酸奶"}],
     food:"🍗 血站大盘鸡（老字号，友好路）· 五一夜市红柳烤肉 · 吴佳抓饭 · 椒麻鸡 · 馕坑肉 · 酸奶疙瘩",
     hotel:"乌鲁木齐市区酒店 · 预估 300–500元/间",
     tips:"机场取车，采购自驾补给（水、零食、防晒、保暖衣物）",isRest:true
@@ -498,7 +504,7 @@ const days = [
     landmark:"https://images.unsplash.com/photo-1721596572025-9fd9bcb7db5c?w=200&h=200&fit=crop",
     image:"https://images.unsplash.com/photo-1509316785289-025f5b846b35?w=800&h=400&fit=crop",
     route:{from:"乌鲁木齐",to:"乌尔禾",km:"400km",hours:"4.5h",highway:"G3014奎阿高速"},
-    spots:[{icon:"⛽",type:"city",name:"克拉玛依",desc:"途经石油城，加油休息"},{icon:"👹",type:"desert",name:"魔鬼城",desc:"雅丹地貌，日落时分最美"}],
+    spots:[{icon:"⛽",type:"city",name:"克拉玛依",desc:"途经石油城，加油休息",img:"https://images.unsplash.com/photo-1737105221863-999bfabbdaf3?w=200&h=200&fit=crop"},{icon:"👹",type:"desert",name:"魔鬼城",desc:"雅丹地貌，日落时分最美",img:"https://plus.unsplash.com/premium_photo-1697730097471-27814de23a1f?w=200&h=200&fit=crop"}],
     food:"🍖 克拉玛依烤全羊 · 油城大盘鸡 · 馕坑肉 · 凉皮子（沿途服务区就有）",
     hotel:"乌尔禾区酒店 · 预估 200–300元/间",
     tips:"下午3-4点入园游魔鬼城，日落光影绝佳",isRest:true
@@ -507,7 +513,7 @@ const days = [
     landmark:"https://images.unsplash.com/photo-1660441993832-43a21a28c127?w=200&h=200&fit=crop",
     image:"https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&h=400&fit=crop",
     route:{from:"乌尔禾",to:"布尔津",km:"280km",hours:"3h",highway:"G217国道"},
-    spots:[{icon:"🏜️",type:"desert",name:"古尔班通古特沙漠",desc:"沿途戈壁荒漠风光"},{icon:"🌙",type:"city",name:"布尔津夜市",desc:"额尔齐斯河冷水鱼"}],
+    spots:[{icon:"🏜️",type:"desert",name:"古尔班通古特沙漠",desc:"沿途戈壁荒漠风光"},{icon:"🌙",type:"city",name:"布尔津夜市",desc:"额尔齐斯河冷水鱼",img:"https://images.unsplash.com/photo-1758890844033-1b051887fc7b?w=200&h=200&fit=crop"}],
     food:"🐟 河堤夜市烤狗鱼（必吃！）· 五道黑冷水鱼 · 哈萨克手抓肉 · 格瓦斯（俄式饮料）· 奶酪包",
     hotel:"布尔津县城酒店 · 预估 250–400元/间",
     tips:"中午抵达布尔津，下午休整逛夜市"
@@ -516,7 +522,7 @@ const days = [
     landmark:"https://images.unsplash.com/photo-1698253542757-dcafef34a137?w=200&h=200&fit=crop",
     image:"https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?w=800&h=400&fit=crop",
     route:{from:"布尔津",to:"喀纳斯",km:"160km",hours:"3h",highway:"S232省道"},
-    spots:[{icon:"🏞️",type:"lake",name:"喀纳斯湖",desc:"乘船游湖，湖水碧蓝如宝石"},{icon:"🌊",type:"lake",name:"三湾徒步",desc:"神仙湾·月亮湾·卧龙湾，3-4h"}],
+    spots:[{icon:"🏞️",type:"lake",name:"喀纳斯湖",desc:"乘船游湖，湖水碧蓝如宝石",img:"https://images.unsplash.com/photo-1768346131599-e8e61c0219d4?w=200&h=200&fit=crop"},{icon:"🌊",type:"lake",name:"三湾徒步",desc:"神仙湾·月亮湾·卧龙湾，3-4h",img:"https://plus.unsplash.com/premium_photo-1669613233573-4911a0a81c63?w=200&h=200&fit=crop"}],
     food:"🐑 清炖羊肉（景区内图瓦人餐馆）· 奶茶配包尔萨克 · 风干马肉 · 野蜂蜜 · 贾登峪餐厅选择较多",
     hotel:"贾登峪酒店/小木屋 · 预估 800–1500元/间",
     tips:"建议早出发避开排队；区间车可能排队1-2小时"
@@ -525,7 +531,7 @@ const days = [
     landmark:"https://images.unsplash.com/photo-1729581173921-417f634eb443?w=200&h=200&fit=crop",
     image:"https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=800&h=400&fit=crop",
     route:{from:"喀纳斯",to:"禾木",km:"60km",hours:"1.5h",highway:"景区公路"},
-    spots:[{icon:"🌅",type:"mountain",name:"神仙湾晨雾",desc:"清晨6:30-8:00拍摄晨雾"},{icon:"🏡",type:"village",name:"禾木村",desc:"中国第一村，金黄白桦林"},{icon:"⛰️",type:"mountain",name:"禾木观景台",desc:"俯瞰禾木村全景"}],
+    spots:[{icon:"🌅",type:"mountain",name:"神仙湾晨雾",desc:"清晨6:30-8:00拍摄晨雾",img:"https://plus.unsplash.com/premium_photo-1669613233573-4911a0a81c63?w=200&h=200&fit=crop"},{icon:"🏡",type:"village",name:"禾木村",desc:"中国第一村，金黄白桦林",img:"https://images.unsplash.com/photo-1729581173921-417f634eb443?w=200&h=200&fit=crop"},{icon:"⛰️",type:"mountain",name:"禾木观景台",desc:"俯瞰禾木村全景",img:"https://images.unsplash.com/photo-1729581173921-417f634eb443?w=200&h=200&fit=crop"}],
     food:"🏡 图瓦人手抓肉 · 奶茶泡馕 · 烤羊排 · 奶疙瘩 · 村里小木屋餐馆都不踩雷",
     hotel:"✅ 已定酒店",
     hotelBooked:{name:"知山SAN逸境度假酒店(禾木风景区店)",room:"1张1.8大床 + 2张1.2单人床"},
@@ -553,7 +559,7 @@ const days = [
     landmark:"https://images.unsplash.com/photo-1738733656279-e22f692e68c8?w=200&h=200&fit=crop",
     image:"https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&h=400&fit=crop",
     route:{from:"布尔津",to:"赛里木湖",km:"550km",hours:"6h",highway:"G217→G3014→G30"},
-    spots:[{icon:"🏔️",type:"lake",name:"赛里木湖",desc:"大西洋最后一滴眼泪"},{icon:"🌅",type:"lake",name:"赛里木湖日落",desc:"草原泛黄+雪山倒影"}],
+    spots:[{icon:"🏔️",type:"lake",name:"赛里木湖",desc:"大西洋最后一滴眼泪",img:"https://images.unsplash.com/photo-1779638529211-71203742f555?w=200&h=200&fit=crop"},{icon:"🌅",type:"lake",name:"赛里木湖日落",desc:"草原泛黄+雪山倒影"}],
     food:"🐑 蒙古包手抓羊肉 · 奶茶 · 馕 · 赛里木湖景区内餐饮有限，建议自带干粮或在精河县吃",
     hotel:"赛里木湖蒙古包/精河酒店 · 预估 400–800元/间",
     tips:"今天路程较长建议早出发；海拔2000m+，夜间-5°C",isHeavy:true
@@ -561,7 +567,7 @@ const days = [
   { id:8, day:"DAY 9", date:"10月2日 · 周四", title:"赛里木湖 → 伊宁", coord:[43.9100,81.3100], color:"#8b5cf6",
     image:"https://images.unsplash.com/photo-1473116763249-2faaef81ccda?w=800&h=400&fit=crop",
     route:{from:"赛里木湖",to:"伊宁",km:"150km",hours:"2h",highway:"G30→G218"},
-    spots:[{icon:"🌉",type:"mountain",name:"果子沟大桥",desc:"新疆第一高桥"},{icon:"🏘️",type:"city",name:"喀赞其",desc:"蓝色小巷、手工冰淇淋"},{icon:"🕌",type:"city",name:"伊宁市区",desc:"伊犁河落日"}],
+    spots:[{icon:"🌉",type:"mountain",name:"果子沟大桥",desc:"新疆第一高桥"},{icon:"🏘️",type:"city",name:"喀赞其",desc:"蓝色小巷、手工冰淇淋",img:"https://images.unsplash.com/photo-1694608014679-cc6ab44990f8?w=200&h=200&fit=crop"},{icon:"🕌",type:"city",name:"伊宁市区",desc:"伊犁河落日"}],
     food:"🍦 喀赞其手工冰淇淋（必吃！）· 汉人街面肺子+米肠子 · 烤包子 · 凉皮 · 卡瓦斯（酸甜饮料）",
     hotel:"伊宁市区酒店 · 预估 300–500元/间",
     tips:"今天行程轻松，好好休息",isRest:true
@@ -570,7 +576,7 @@ const days = [
     landmark:"https://images.unsplash.com/photo-1696330517289-db233d87e13f?w=200&h=200&fit=crop",
     image:"https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=800&h=400&fit=crop",
     route:{from:"伊宁",to:"那拉提",km:"270km",hours:"4h",highway:"G218国道"},
-    spots:[{icon:"🏔️",type:"grass",name:"那拉提草原",desc:"世界四大草原之一"},{icon:"🐴",type:"grass",name:"草原骑马",desc:"策马奔腾，雪山连绵"}],
+    spots:[{icon:"🏔️",type:"grass",name:"那拉提草原",desc:"世界四大草原之一",img:"https://images.unsplash.com/photo-1696330517289-db233d87e13f?w=200&h=200&fit=crop"},{icon:"🐴",type:"grass",name:"草原骑马",desc:"策马奔腾，雪山连绵"}],
     food:"🐎 哈萨克手抓肉（牧家乐现宰）· 马肉纳仁 · 熏马肠 · 马奶酒 · 镇上小馆子拌面也地道",
     hotel:"那拉提镇酒店 · 预估 400–600元/间",
     tips:"G218沿伊犁河谷，风景优美"
@@ -579,7 +585,7 @@ const days = [
     landmark:"https://images.unsplash.com/photo-1624291732728-651136d8a3d4?w=200&h=200&fit=crop",
     image:"https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=800&h=400&fit=crop",
     route:{from:"那拉提",to:"库尔勒",km:"360km",hours:"5h",highway:"G218→G217独库公路"},
-    spots:[{icon:"🛣️",type:"mountain",name:"独库公路",desc:"中国最美公路之一"},{icon:"🏔️",type:"mountain",name:"天山风光",desc:"草原到戈壁垂直景观"}],
+    spots:[{icon:"🛣️",type:"mountain",name:"独库公路",desc:"中国最美公路之一",img:"https://plus.unsplash.com/premium_photo-1726833616244-d5a50a0fcd7c?w=200&h=200&fit=crop"},{icon:"🏔️",type:"mountain",name:"天山风光",desc:"草原到戈壁垂直景观",img:"https://images.unsplash.com/photo-1642129412847-ea049c5def2e?w=200&h=200&fit=crop"}],
     food:"🍐 库尔勒香梨（当地特产，路边就有卖）· 缸子肉 · 馕坑肉 · 烤全羊 · 孔雀河边美食街",
     hotel:"库尔勒市区酒店 · 预估 250–400元/间",
     tips:"⚠️ 独库公路10月初可能因降雪封路，提前确认路况！",isHeavy:true
@@ -588,7 +594,7 @@ const days = [
     landmark:"https://images.unsplash.com/photo-1699794999362-2d5282915809?w=200&h=200&fit=crop",
     image:"https://res.klook.com/image/upload/fl_lossy.progressive,q_60/Mobile/City/zhier67ysllab4lfzlzi.jpg",
     route:{from:"库尔勒",to:"乌鲁木齐",km:"470km",hours:"5.5h",highway:"G30连霍高速"},
-    spots:[{icon:"🛍️",type:"city",name:"大巴扎",desc:"采购干果、薰衣草精油"},{icon:"🍖",type:"city",name:"告别美食",desc:"最后的大盘鸡/拌面"}],
+    spots:[{icon:"🛍️",type:"city",name:"大巴扎",desc:"采购干果、薰衣草精油",img:"https://images.unsplash.com/photo-1629649407271-2dac934c1f1b?w=200&h=200&fit=crop"},{icon:"🍖",type:"city",name:"告别美食",desc:"最后的大盘鸡/拌面"}],
     food:"🍗 二道桥大盘鸡 · 烤羊排 · 干果市场买特产（葡萄干、核桃、红枣）· 最后再来一碗拌面",
     hotel:"乌鲁木齐市区酒店 · 预估 300–500元/间",
     tips:"下午抵达，采购特产，晚上好好休息"
@@ -929,33 +935,35 @@ setTimeout(()=>{document.querySelector('.day-card').click();},500);
   let spotRouteLine=null;
 
   function showDaySpots(idx){
-    // 清除旧的景点标记
     spotMarkers.forEach(m=>window.map.removeLayer(m));
     spotMarkers=[];
     if(spotRouteLine){window.map.removeLayer(spotRouteLine);spotRouteLine=null;}
 
     const d=days[idx];
-    if(!d||d.route.km==='—')return; // 出发/返回日不显示
+    if(!d||d.route.km==='—')return;
 
     const spots=d.spots;
     if(spots.length<2)return;
 
     const center=d.coord;
-    const radius=0.03; // 偏移量（约3km）
+    const radius=0.03;
     const routeCoords=[center];
 
     spots.forEach((s,i)=>{
-      // 每个景点围绕主坐标均匀分布
       const angle=(2*Math.PI*i/spots.length)-Math.PI/2;
       const r=radius*(0.6+Math.random()*0.4);
       const lat=center[0]+r*Math.cos(angle);
-      const lng=center[1]+r*Math.sin(angle)*1.5; // 经度方向拉伸
+      const lng=center[1]+r*Math.sin(angle)*1.5;
       routeCoords.push([lat,lng]);
 
+      // 有图片用图片气泡，没有用emoji
+      const hasImg=s.img;
       const spotIcon=L.divIcon({
         className:'spot-marker',
-        html:`<div class="spot-pin" style="background:linear-gradient(135deg,#0ea5e9,#06b6d4)">${s.icon}</div>`,
-        iconSize:[28,28],iconAnchor:[14,28],popupAnchor:[0,-30]
+        html:hasImg
+          ?`<div class="spot-bubble"><img class="spot-img" src="${s.img}" alt=""><div class="spot-label">${s.name}</div></div>`
+          :`<div class="spot-pin" style="background:linear-gradient(135deg,#0ea5e9,#06b6d4)">${s.icon}</div>`,
+        iconSize:hasImg?[60,70]:[28,28],iconAnchor:hasImg?[30,70]:[14,28],popupAnchor:hasImg?[0,-72]:[0,-30]
       });
       const m=L.marker([lat,lng],{icon:spotIcon}).addTo(window.map);
       m.bindPopup(`<div style="font-family:'Noto Sans SC',sans-serif;padding:2px 4px;font-size:13px"><b>${s.icon} ${s.name}</b><br><span style="color:#666;font-size:12px">${s.desc}</span></div>`,{className:'custom-popup',maxWidth:220});
@@ -1013,15 +1021,18 @@ setTimeout(()=>{document.querySelector('.day-card').click();},500);
     html+='<div class="m-timeline">';
     d.spots.forEach((s,i)=>{
       const isLast=i===d.spots.length-1&&!d.hotel&&!d.food;
+      const hasImg=s.img;
       html+=`<div class="m-node">
         <div class="m-axis">
           <div class="m-dot" style="background:${d.color}">${i+1}</div>
           ${!isLast?'<div class="m-line"></div>':''}
         </div>
         <div class="m-card" onclick="window.mShowDetail(${idx})">
-          <div class="m-card-title">${s.icon} ${s.name}</div>
-          <div class="m-card-desc">${s.desc}</div>
-          <div class="m-card-tag"><i class="fas fa-map-marker-alt"></i> 点击查看详情</div>
+          ${hasImg?`<img class="m-card-img" src="${s.img}" alt="">`:''}
+          <div class="m-card-text">
+            <div class="m-card-title">${s.icon} ${s.name}</div>
+            <div class="m-card-desc">${s.desc}</div>
+          </div>
         </div>
       </div>`;
     });
@@ -1377,6 +1388,22 @@ function saveOffline(){
   border:2px solid #fff;transition:transform .2s;
 }
 .spot-pin:active{transform:scale(1.2)}
+/* 景点图片气泡 */
+.spot-bubble{
+  width:60px;display:flex;flex-direction:column;align-items:center;
+}
+.spot-img{
+  width:52px;height:52px;border-radius:14px;object-fit:cover;
+  border:3px solid #fff;box-shadow:0 2px 10px rgba(0,0,0,.3);
+}
+.spot-label{
+  margin-top:4px;padding:2px 8px;
+  background:#fff;border-radius:8px;
+  font-size:10px;font-weight:600;color:#334155;
+  box-shadow:0 1px 6px rgba(0,0,0,.12);
+  white-space:nowrap;max-width:80px;overflow:hidden;text-overflow:ellipsis;
+  text-align:center;
+}
 </style>
 </body>
 </html>
