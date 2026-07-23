@@ -894,17 +894,24 @@ setTimeout(()=>{document.querySelector('.day-card').click();},500);
     const d=days[idx];
     if(!d||!window.map)return;
 
-    // 半开时地图往上偏移（避免被sheet遮挡）
+    // 根据Sheet状态调整地图焦点
     const sheet=document.getElementById('mSheet');
     const isExpanded=sheet&&sheet.classList.contains('expanded');
+    const isCollapsed=sheet&&sheet.classList.contains('collapsed');
     const vh=window.innerHeight;
+    const mapH=vh*0.35; // 地图高度占35%
+
     if(isExpanded){
-      // 全开：地图全屏，正常居中
+      // 全开：地图几乎不可见，居中即可
       window.map.flyTo(d.coord,8,{duration:1});
+    }else if(isCollapsed){
+      // 收起：地图全屏可见，焦点居中偏下一点
+      window.map.flyTo([d.coord[0]-0.05,d.coord[1]],8,{duration:1});
     }else{
-      // 半开/收起：地图只露上面35-40%，偏移中心
-      const offset=vh*0.18/vh; // 约0.18度偏移
-      window.map.flyTo([d.coord[0]+offset,d.coord[1]],8,{duration:1});
+      // 半开：Sheet占65%，地图只露上面35%
+      // 焦点应放在地图可见区域的中心（即屏幕上方17.5%处）
+      const offsetLat=vh*0.15/111000*1000; // 屏幕上方17.5%对应的纬度偏移
+      window.map.flyTo([d.coord[0]+offsetLat,d.coord[1]],8,{duration:1});
     }
   }
 
