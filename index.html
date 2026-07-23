@@ -15,8 +15,8 @@
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&display=swap');
-body{font-family:'Noto Sans SC','Microsoft YaHei',sans-serif;background:#0a0f1a;color:#e2e8f0;overflow:hidden;height:100vh}
-.container{display:flex;height:100vh}
+body{font-family:'Noto Sans SC','Microsoft YaHei',sans-serif;background:#f0f7ff;color:#e2e8f0;overflow:hidden;height:100vh}
+.container{display:flex;height:100vh;background:#f0f7ff}
 .sidebar{width:420px;min-width:420px;background:linear-gradient(180deg,#131a2e 0%,#0a0f1a 100%);overflow-y:auto;z-index:1000;border-right:1px solid rgba(255,255,255,.06);display:flex;flex-direction:column}
 .map-wrap{flex:1;position:relative}
 #map{width:100%;height:100%;z-index:1;background:#e8e8e8}
@@ -221,13 +221,14 @@ body{font-family:'Noto Sans SC','Microsoft YaHei',sans-serif;background:#0a0f1a;
     position:relative;
   }
 
-  /* 全开时景点大图 */
+  /* 景点大图（跟随滚动） */
   .m-hero-showcase{
     height:0;overflow:hidden;
     transition:height .4s cubic-bezier(.32,.72,0,1),opacity .3s;
     opacity:0;position:relative;
   }
   .m-sheet.expanded .m-hero-showcase{height:200px;opacity:1}
+  .m-sheet.collapsed .m-hero-showcase,.m-sheet:not(.expanded) .m-hero-showcase{height:0;opacity:0}
   .m-hero-img{
     width:100%;height:200px;object-fit:cover;
     transition:opacity .5s,transform .5s;
@@ -464,11 +465,12 @@ body{font-family:'Noto Sans SC','Microsoft YaHei',sans-serif;background:#0a0f1a;
     </div>
   </div>
   <div class="m-tabs" id="mTabs"></div>
-  <div class="m-hero-showcase" id="mHeroShowcase">
-    <div class="m-hero-overlay"></div>
-    <div class="m-hero-label" id="mHeroLabel"><i class="fas fa-camera"></i> <span></span></div>
+  <div class="m-content" id="mContent">
+    <div class="m-hero-showcase" id="mHeroShowcase">
+      <div class="m-hero-overlay"></div>
+      <div class="m-hero-label" id="mHeroLabel"><i class="fas fa-camera"></i> <span></span></div>
+    </div>
   </div>
-  <div class="m-content" id="mContent"></div>
 </div>
 
 <!-- ===== 移动端详情弹窗 ===== -->
@@ -1091,6 +1093,29 @@ setTimeout(()=>{document.querySelector('.day-card').click();},500);
     content.addEventListener('touchstart',onTouchStart,{passive:true});
     content.addEventListener('touchmove',onTouchMove,{passive:true});
     content.addEventListener('touchend',onTouchEnd,{passive:true});
+
+    // 左右滑动切换Tab
+    (function(){
+      let sx=0,sy=0,swiping=false,locked=false;
+      content.addEventListener('touchstart',e=>{
+        sx=e.touches[0].clientX;sy=e.touches[0].clientY;swiping=true;locked=false;
+      },{passive:true});
+      content.addEventListener('touchmove',e=>{
+        if(!swiping||locked)return;
+        const dx=e.touches[0].clientX-sx;
+        const dy=Math.abs(e.touches[0].clientY-sy);
+        if(dy>15&&Math.abs(dx)<15){locked=true;return;}
+      },{passive:true});
+      content.addEventListener('touchend',e=>{
+        if(!swiping||locked){swiping=false;return;}
+        const dx=e.changedTouches[0].clientX-sx;
+        if(Math.abs(dx)>60){
+          if(dx<0&&activeDay<days.length-1)switchDay(activeDay+1);
+          else if(dx>0&&activeDay>0)switchDay(activeDay-1);
+        }
+        swiping=false;
+      },{passive:true});
+    })();
 
     // 点击手柄切换
     handle.addEventListener('click',()=>{
