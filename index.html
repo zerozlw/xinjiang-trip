@@ -521,7 +521,7 @@ map.on('click',()=>{if(window.innerWidth<=768)closeDetail();else document.getEle
 // ===== Bottom Sheet 交互 (Apple HIG 风格) =====
 (function(){
   const panel=document.getElementById('detailPanel');
-  let startY=0,currentY=0,dragging=false sheetHeight=0;
+  let startY=0,currentY=0,dragging=false,sheetHeight=0;
 
   // 创建遮罩层
   const backdrop=document.createElement('div');
