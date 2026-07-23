@@ -221,12 +221,12 @@ body{font-family:'Noto Sans SC','Microsoft YaHei',sans-serif;background:#f0f7ff;
     position:relative;
   }
 
-  /* 景点大图（全开时显示，跟随滚动） */
+  /* 景点大图（全开时显示，在Tab和内容之间） */
   .m-hero-showcase{
-    height:0;overflow:hidden;opacity:0;position:relative;
-    transition:height .4s cubic-bezier(.32,.72,0,1),opacity .3s;
+    flex:0 0 0px;overflow:hidden;opacity:0;position:relative;
+    transition:flex .4s cubic-bezier(.32,.72,0,1),opacity .3s;
   }
-  .m-sheet.expanded .m-hero-showcase{height:200px;opacity:1}
+  .m-sheet.expanded .m-hero-showcase{flex:0 0 200px;opacity:1}
   .m-hero-img{
     width:100%;height:200px;object-fit:cover;
     transition:opacity .5s,transform .5s;
@@ -463,12 +463,11 @@ body{font-family:'Noto Sans SC','Microsoft YaHei',sans-serif;background:#f0f7ff;
     </div>
   </div>
   <div class="m-tabs" id="mTabs"></div>
-  <div class="m-content" id="mContent">
-    <div class="m-hero-showcase" id="mHeroShowcase">
-      <div class="m-hero-overlay"></div>
-      <div class="m-hero-label" id="mHeroLabel"><i class="fas fa-camera"></i> <span></span></div>
-    </div>
+  <div class="m-hero-showcase" id="mHeroShowcase">
+    <div class="m-hero-overlay"></div>
+    <div class="m-hero-label" id="mHeroLabel"><i class="fas fa-camera"></i> <span></span></div>
   </div>
+  <div class="m-content" id="mContent"></div>
 </div>
 
 <!-- ===== 移动端详情弹窗 ===== -->
