@@ -687,31 +687,35 @@ map.on('click',()=>{if(window.innerWidth<=768)closeDetail();else document.getEle
 // ===== Bottom Sheet 交互 (Apple HIG 风格) =====
 (function(){
   const panel=document.getElementById('detailPanel');
+  const isMobile=window.innerWidth<=768;
   let startY=0,currentY=0,dragging=false,sheetHeight=0;
 
-  // 创建遮罩层
-  const backdrop=document.createElement('div');
-  backdrop.style.cssText='position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.5);z-index:1999;opacity:0;transition:opacity .3s ease;pointer-events:none;display:none';
-  document.body.appendChild(backdrop);
-  backdrop.addEventListener('click',()=>closeDetail());
+  // 只在桌面端创建遮罩层
+  let backdrop=null;
+  if(!isMobile){
+    backdrop=document.createElement('div');
+    backdrop.style.cssText='position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.5);z-index:1999;opacity:0;transition:opacity .3s ease;pointer-events:none;display:none';
+    document.body.appendChild(backdrop);
+    backdrop.addEventListener('click',()=>closeDetail());
+  }
 
   // 打开面板
   window.openDetail=function(){
+    if(isMobile)return; // 移动端不使用桌面面板
     panel.classList.add('show');
-    backdrop.style.display='block';
-    requestAnimationFrame(()=>{backdrop.style.opacity='1'});
-    if(window.innerWidth<=768){
-      document.body.style.overflow='hidden';
-      document.body.style.position='fixed';
-      document.body.style.width='100%';
+    if(backdrop){
+      backdrop.style.display='block';
+      requestAnimationFrame(()=>{backdrop.style.opacity='1'});
     }
   };
 
   // 关闭面板
   window.closeDetail=function(){
     panel.classList.remove('show');
-    backdrop.style.opacity='0';
-    setTimeout(()=>{backdrop.style.display='none'},300);
+    if(backdrop){
+      backdrop.style.opacity='0';
+      setTimeout(()=>{backdrop.style.display='none'},300);
+    }
     document.body.style.overflow='';
     document.body.style.position='';
     document.body.style.width='';
@@ -758,24 +762,7 @@ map.on('click',()=>{if(window.innerWidth<=768)closeDetail();else document.getEle
 
   // 暴露给外部使用
   window.showDetailPanel=function(d){
-    const spotsHTML=d.spots.map(s=>`<div class="spot-card"><div class="spot-icon ${s.type}">${s.icon}</div><div class="spot-info"><h4>${s.name}</h4><p>${s.desc}</p></div></div>`).join('');
-    let hotelRecHTML='';
-    if(d.hotelBooked){
-      hotelRecHTML=`<div class="hotel-booked-detail"><div class="hb-name">${d.hotelBooked.name}</div><div class="hb-room">🛏️ ${d.hotelBooked.room}</div></div>`;
-    }
-    panel.innerHTML=`
-      <div class="detail-hero" style="background-image:url('${d.image}')">
-        <div class="detail-hero-title"><h2>${d.title}</h2><div class="sub">${d.day} · ${d.date}</div></div>
-        <button class="detail-close" onclick="closeDetail()"><i class="fas fa-times"></i></button>
-      </div>
-      <div class="detail-body">
-        ${d.route.km!=='—'?`<div class="route-box"><div class="from-to"><span>${d.route.from}</span><span class="arrow"><i class="fas fa-arrow-right"></i></span><span>${d.route.to}</span></div><div class="route-detail"><span><i class="fas fa-road"></i> ${d.route.km}</span><span><i class="fas fa-clock"></i> ${d.route.hours}</span></div>${d.route.highway?`<div style="margin-top:8px;font-size:12px;color:#94a3b8"><i class="fas fa-route" style="color:#f97316;margin-right:6px"></i>${d.route.highway}</div>`:''}</div>`:''}
-        <div class="detail-section"><h3><i class="fas fa-map-marked-alt"></i> 景点亮点</h3>${spotsHTML}</div>
-        <div class="detail-section"><div class="hotel-box${d.hotelBooked?' booked':''}"><h4><i class="fas fa-hotel"></i> ${d.hotelBooked?'已定酒店':'住宿推荐'}</h4>${d.hotelBooked?'<span class="booked-badge"><i class="fas fa-check-circle"></i> 已预订</span>':''}<p>${d.hotel}</p>${hotelRecHTML}</div></div>
-        <div class="detail-section"><div class="food-box"><h4><i class="fas fa-utensils"></i> 美食推荐</h4><p>${d.food||'当地特色美食'}</p></div></div>
-        ${d.tips?`<div class="detail-section"><h3><i class="fas fa-exclamation-triangle"></i> 温馨提示</h3><p style="color:#fbbf24;font-size:13px;line-height:1.8">${d.tips}</p></div>`:''}
-      </div>`;
-    openDetail();
+    // 移动端不触发桌面端的openDetail（会创建暗色遮罩）
   };
 })();
 
