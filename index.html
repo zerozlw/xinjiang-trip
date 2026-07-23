@@ -585,12 +585,12 @@ const days = [
     hotel:"乌鲁木齐市区酒店 · 预估 300–500元/间",
     tips:"下午抵达，采购特产，晚上好好休息"
   },
-  { id:12, day:"DAY 13", date:"10月6日 · 周一", title:"乌鲁木齐 → 上海", coord:[43.8256,87.6168], color:"#6366f1",
+  { id:12, day:"DAY 13", date:"10月6日 · 周一", title:"乌鲁木齐 · 返程", coord:[43.8256,87.6168], color:"#6366f1",
     image:"https://res.klook.com/image/upload/fl_lossy.progressive,q_60/Mobile/City/zhier67ysllab4lfzlzi.jpg",
-    route:{from:"乌鲁木齐 ✈️",to:"上海",km:"—",hours:"航班",highway:""},
-    spots:[{icon:"🛍️",type:"city",name:"还车",desc:"确认还车时间地点"},{icon:"✈️",type:"city",name:"返程",desc:"预留充足时间去机场"}],
+    route:{from:"乌鲁木齐",to:"回家",km:"—",hours:"各自的航班",highway:""},
+    spots:[{icon:"🛍️",type:"city",name:"大巴扎逛逛",desc:"最后采购干果特产"},{icon:"🚗",type:"city",name:"还车",desc:"确认还车时间地点"},{icon:"✈️",type:"city",name:"各回各家",desc:"预留充足时间去机场"}],
     hotel:"— 返程 —",
-    tips:"还车确认时间地点，预留充足时间去机场",isRest:true
+    tips:"还车确认时间地点，预留充足时间去机场。旅途愉快，下次再约！",isRest:true
   }
 ];
 
@@ -844,6 +844,7 @@ setTimeout(()=>{document.querySelector('.day-card').click();},500);
     renderDay(idx);
     updateHeroImage(idx);
     highlightMarker(idx);
+    showDaySpots(idx);
     const d=days[idx];
     if(d&&window.map){window.map.flyTo(d.coord,8,{duration:1})}
   }
@@ -873,7 +874,53 @@ setTimeout(()=>{document.querySelector('.day-card').click();},500);
     });
   }
 
-  // 更新景点大图
+  // 景点标记和路线（当天所有景点显示在地图上）
+  let spotMarkers=[];
+  let spotRouteLine=null;
+
+  function showDaySpots(idx){
+    // 清除旧的景点标记
+    spotMarkers.forEach(m=>window.map.removeLayer(m));
+    spotMarkers=[];
+    if(spotRouteLine){window.map.removeLayer(spotRouteLine);spotRouteLine=null;}
+
+    const d=days[idx];
+    if(!d||d.route.km==='—')return; // 出发/返回日不显示
+
+    const spots=d.spots;
+    if(spots.length<2)return;
+
+    const center=d.coord;
+    const radius=0.03; // 偏移量（约3km）
+    const routeCoords=[center];
+
+    spots.forEach((s,i)=>{
+      // 每个景点围绕主坐标均匀分布
+      const angle=(2*Math.PI*i/spots.length)-Math.PI/2;
+      const r=radius*(0.6+Math.random()*0.4);
+      const lat=center[0]+r*Math.cos(angle);
+      const lng=center[1]+r*Math.sin(angle)*1.5; // 经度方向拉伸
+      routeCoords.push([lat,lng]);
+
+      const spotIcon=L.divIcon({
+        className:'spot-marker',
+        html:`<div class="spot-pin" style="background:${d.color}">${s.icon}</div>`,
+        iconSize:[28,28],iconAnchor:[14,28],popupAnchor:[0,-30]
+      });
+      const m=L.marker([lat,lng],{icon:spotIcon}).addTo(window.map);
+      m.bindPopup(`<div style="font-family:'Noto Sans SC',sans-serif;padding:2px 4px;font-size:13px"><b>${s.icon} ${s.name}</b><br><span style="color:#666;font-size:12px">${s.desc}</span></div>`,{className:'custom-popup',maxWidth:220});
+      spotMarkers.push(m);
+    });
+
+    // 画景点间连线
+    spotRouteLine=L.polyline(routeCoords,{color:d.color,weight:3,opacity:.5,dashArray:'8,6',smoothFactor:1}).addTo(window.map);
+  }
+
+  function clearDaySpots(){
+    spotMarkers.forEach(m=>window.map.removeLayer(m));
+    spotMarkers=[];
+    if(spotRouteLine){window.map.removeLayer(spotRouteLine);spotRouteLine=null;}
+  }
   const heroShowcase=document.getElementById('mHeroShowcase');
   const heroLabel=document.getElementById('mHeroLabel');
   function updateHeroImage(idx){
@@ -1153,6 +1200,7 @@ setTimeout(()=>{document.querySelector('.day-card').click();},500);
   renderDay(0);
   updateHeroImage(0);
   highlightMarker(0);
+  showDaySpots(0);
 })();
 
 // === PWA 离线缓存 ===
@@ -1230,6 +1278,12 @@ function saveOffline(){
 .marker-pin{transition:transform .3s,opacity .3s,box-shadow .3s}
 .marker-dimmed{opacity:.35!important;transform:scale(.7)!important;box-shadow:none!important}
 .marker-active{transform:scale(1.25)!important;box-shadow:0 4px 20px rgba(0,0,0,.4)!important;z-index:9999!important}
+.spot-pin{
+  width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+  font-size:13px;color:#fff;box-shadow:0 2px 8px rgba(0,0,0,.25);
+  border:2px solid #fff;transition:transform .2s;
+}
+.spot-pin:active{transform:scale(1.2)}
 </style>
 </body>
 </html>
