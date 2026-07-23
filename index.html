@@ -221,14 +221,12 @@ body{font-family:'Noto Sans SC','Microsoft YaHei',sans-serif;background:#f0f7ff;
     position:relative;
   }
 
-  /* 景点大图（跟随滚动） */
+  /* 景点大图（全开时显示，跟随滚动） */
   .m-hero-showcase{
-    height:0;overflow:hidden;
+    height:0;overflow:hidden;opacity:0;position:relative;
     transition:height .4s cubic-bezier(.32,.72,0,1),opacity .3s;
-    opacity:0;position:relative;
   }
   .m-sheet.expanded .m-hero-showcase{height:200px;opacity:1}
-  .m-sheet.collapsed .m-hero-showcase,.m-sheet:not(.expanded) .m-hero-showcase{height:0;opacity:0}
   .m-hero-img{
     width:100%;height:200px;object-fit:cover;
     transition:opacity .5s,transform .5s;
@@ -823,11 +821,22 @@ setTimeout(()=>{document.querySelector('.day-card').click();},500);
   // 切换天数
   function switchDay(idx){
     activeDay=idx;
+    // 重置滑动transform
+    const header=document.querySelector('.m-header');
+    const tabs=document.getElementById('mTabs');
+    [contentEl,header,tabs].forEach(el=>{
+      if(!el)return;
+      el.style.transition='transform .3s cubic-bezier(.32,.72,0,1)';
+      el.style.transform='';
+      setTimeout(()=>{el.style.transition='';},300);
+    });
+
     document.querySelectorAll('.m-tab').forEach((t,i)=>{
       t.classList.toggle('active',i===idx);
     });
     const tab=tabsEl.children[idx];
     if(tab)tab.scrollIntoView({behavior:'smooth',inline:'center',block:'nearest'});
+    contentEl.scrollTop=0; // 切换时回到顶部
     renderDay(idx);
     updateHeroImage(idx);
     highlightMarker(idx);
@@ -1128,27 +1137,66 @@ setTimeout(()=>{document.querySelector('.day-card').click();},500);
     content.addEventListener('touchmove',onTouchMove,{passive:true});
     content.addEventListener('touchend',onTouchEnd,{passive:true});
 
-    // 左右滑动切换Tab
+    // 左右滑动切换Tab（带跟手动画）
     (function(){
-      let sx=0,sy=0,swiping=false,locked=false;
+      let sx=0,sy=0,swiping=false,locked=false,direction=0;
+      const header=document.querySelector('.m-header');
+      const tabs=document.getElementById('mTabs');
+
       content.addEventListener('touchstart',e=>{
-        sx=e.touches[0].clientX;sy=e.touches[0].clientY;swiping=true;locked=false;
+        sx=e.touches[0].clientX;sy=e.touches[0].clientY;
+        swiping=true;locked=false;direction=0;
       },{passive:true});
+
       content.addEventListener('touchmove',e=>{
         if(!swiping||locked)return;
         const dx=e.touches[0].clientX-sx;
         const dy=Math.abs(e.touches[0].clientY-sy);
-        if(dy>15&&Math.abs(dx)<15){locked=true;return;}
-      },{passive:true});
-      content.addEventListener('touchend',e=>{
-        if(!swiping||locked){swiping=false;return;}
-        const dx=e.changedTouches[0].clientX-sx;
-        if(Math.abs(dx)>60){
-          if(dx<0&&activeDay<days.length-1)switchDay(activeDay+1);
-          else if(dx>0&&activeDay>0)switchDay(activeDay-1);
+        // 竖向滚动优先
+        if(dy>12&&Math.abs(dx)<12){locked=true;return;}
+        // 水平滑动：跟手移动
+        if(Math.abs(dx)>10){
+          direction=dx<0?-1:1;
+          // 边界检查：第一天左滑/最后一天右滑时加阻尼
+          let offset=dx;
+          if((activeDay===0&&dx>0)||(activeDay===days.length-1&&dx<0)){
+            offset=dx*0.2; // 阻尼
+          }
+          const pct=(offset/window.innerWidth)*100;
+          content.style.transition='none';
+          content.style.transform=`translateX(${pct}%)`;
+          if(header){header.style.transition='none';header.style.transform=`translateX(${pct}%)`;}
+          if(tabs){tabs.style.transition='none';tabs.style.transform=`translateX(${pct}%)`;}
         }
-        swiping=false;
       },{passive:true});
+
+      content.addEventListener('touchend',e=>{
+        if(!swiping||locked){
+          swiping=false;
+          resetSwipePosition();
+          return;
+        }
+        const dx=e.changedTouches[0].clientX-sx;
+        swiping=false;
+
+        // 判断是否切换
+        const threshold=window.innerWidth*0.2;
+        let shouldSwitch=false;
+        if(dx<-threshold&&activeDay<days.length-1){shouldSwitch=true;switchDay(activeDay+1);}
+        else if(dx>threshold&&activeDay>0){shouldSwitch=true;switchDay(activeDay-1);}
+
+        if(!shouldSwitch)resetSwipePosition();
+        // switchDay会自动重置transform
+      },{passive:true});
+
+      function resetSwipePosition(){
+        [content,header,tabs].forEach(el=>{
+          if(!el)return;
+          el.style.transition='transform .3s cubic-bezier(.32,.72,0,1)';
+          el.style.transform='';
+          setTimeout(()=>{el.style.transition='';},300);
+        });
+      }
     })();
 
     // 点击手柄切换
