@@ -838,16 +838,28 @@ setTimeout(()=>{document.querySelector('.day-card').click();},500);
     if(d&&window.map){window.map.flyTo(d.coord,8,{duration:1})}
   }
 
-  // 高亮当前天的标记，其他变暗
+  // 切换Tab时：只显示当天标记，同坐标的其他标记隐藏
   function highlightMarker(idx){
+    const activeCoord=days[idx].coord.join(',');
     markers.forEach((m,i)=>{
       const el=m.getElement();
       if(!el)return;
       const pin=el.querySelector('.marker-pin');
       if(!pin)return;
+      const mCoord=m.getLatLng().lat.toFixed(4)+','+m.getLatLng().lng.toFixed(4);
       pin.classList.remove('marker-dimmed','marker-active');
-      if(i===idx)pin.classList.add('marker-active');
-      else pin.classList.add('marker-dimmed');
+      if(i===idx){
+        // 当天：高亮放大
+        pin.classList.add('marker-active');
+        el.style.display='';
+      }else if(mCoord===activeCoord){
+        // 同坐标但不是当天：完全隐藏
+        el.style.display='none';
+      }else{
+        // 其他地点：缩小变淡
+        pin.classList.add('marker-dimmed');
+        el.style.display='';
+      }
     });
   }
 
