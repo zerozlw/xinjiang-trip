@@ -220,34 +220,6 @@ body{font-family:'Noto Sans SC','Microsoft YaHei',sans-serif;background:#f0f7ff;
     position:relative;
   }
 
-  /* 景点大图（全开时显示，跟着内容一起滚） */
-  .m-hero-showcase{
-    height:0;overflow:hidden;opacity:0;position:relative;
-    transition:height .4s cubic-bezier(.32,.72,0,1),opacity .3s;
-  }
-  .m-sheet.expanded .m-hero-showcase{height:200px;opacity:1}
-  .m-hero-img{
-    width:100%;height:200px;object-fit:cover;
-    transition:opacity .5s,transform .5s;
-    position:absolute;top:0;left:0;
-  }
-  .m-hero-img.active{opacity:1;transform:scale(1)}
-  .m-hero-img.hidden{opacity:0;transform:scale(1.05)}
-  .m-hero-overlay{
-    position:absolute;bottom:0;left:0;right:0;height:80px;
-    background:linear-gradient(transparent,#f8fbff);
-    z-index:1;
-  }
-  .m-hero-label{
-    position:absolute;bottom:12px;left:16px;z-index:2;
-    background:rgba(14,165,233,.85);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
-    padding:6px 14px;border-radius:20px;
-    font-size:12px;color:#fff;font-weight:600;
-    display:flex;align-items:center;gap:6px;
-    opacity:0;transition:opacity .3s;
-  }
-  .m-sheet.expanded .m-hero-label{opacity:1}
-
   /* 地点大图（全开时跟随内容滚动） */
   .m-day-hero{
     width:100%;height:200px;position:relative;overflow:hidden;
@@ -484,10 +456,6 @@ body{font-family:'Noto Sans SC','Microsoft YaHei',sans-serif;background:#f0f7ff;
     </div>
   </div>
   <div class="m-tabs" id="mTabs"></div>
-  <div class="m-hero-showcase" id="mHeroShowcase">
-    <div class="m-hero-overlay"></div>
-    <div class="m-hero-label" id="mHeroLabel"><i class="fas fa-camera"></i> <span></span></div>
-  </div>
   <div class="m-content" id="mContent"></div>
 </div>
 
@@ -902,7 +870,6 @@ setTimeout(()=>{document.querySelector('.day-card').click();},500);
     if(tab)tab.scrollIntoView({behavior:'smooth',inline:'center',block:'nearest'});
     contentEl.scrollTop=0;
     renderDay(idx);
-    updateHeroImage(idx);
     highlightMarker(idx);
     showDaySpots(idx);
     const d=days[idx];
@@ -996,40 +963,6 @@ setTimeout(()=>{document.querySelector('.day-card').click();},500);
     spotMarkers.forEach(m=>window.map.removeLayer(m));
     spotMarkers=[];
     if(spotRouteLine){window.map.removeLayer(spotRouteLine);spotRouteLine=null;}
-  }
-  const heroShowcase=document.getElementById('mHeroShowcase');
-  const heroLabel=document.getElementById('mHeroLabel');
-  function updateHeroImage(idx){
-    const d=days[idx];
-    if(!d)return;
-    // 移除旧图片
-    const oldImgs=heroShowcase.querySelectorAll('.m-hero-img');
-    // 加载新图片
-    const img=document.createElement('img');
-    img.className='m-hero-img hidden';
-    img.src=d.image;
-    img.alt=d.title;
-    img.onload=()=>{
-      heroShowcase.appendChild(img);
-      requestAnimationFrame(()=>{
-        oldImgs.forEach(o=>o.remove());
-        img.classList.remove('hidden');
-        img.classList.add('active');
-      });
-    };
-    // 更新标签
-    heroLabel.querySelector('span').textContent=d.title;
-  }
-
-  // Sheet展开时重新加载大图
-  const sheetEl=document.getElementById('mSheet');
-  if(sheetEl){
-    const observer=new MutationObserver(()=>{
-      if(sheetEl.classList.contains('expanded')){
-        updateHeroImage(activeDay);
-      }
-    });
-    observer.observe(sheetEl,{attributes:true,attributeFilter:['class']});
   }
 
   // 渲染某天的时间轴
@@ -1317,7 +1250,6 @@ setTimeout(()=>{document.querySelector('.day-card').click();},500);
 
   // 初始化第一天
   renderDay(0);
-  updateHeroImage(0);
   highlightMarker(0);
   showDaySpots(0);
 })();
