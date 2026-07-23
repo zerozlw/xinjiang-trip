@@ -209,7 +209,37 @@ body{font-family:'Noto Sans SC','Microsoft YaHei',sans-serif;background:#0a0f1a;
     flex:1;overflow-y:auto;overflow-x:hidden;
     -webkit-overflow-scrolling:touch;
     padding:0 0 env(safe-area-inset-bottom,20px);
+    position:relative;
   }
+
+  /* 全开时的景点大图展示 */
+  .m-hero-showcase{
+    height:0;overflow:hidden;
+    transition:height .4s cubic-bezier(.32,.72,0,1),opacity .3s;
+    opacity:0;position:relative;
+  }
+  .m-sheet.expanded .m-hero-showcase{height:200px;opacity:1}
+  .m-hero-img{
+    width:100%;height:200px;object-fit:cover;
+    transition:opacity .5s,transform .5s;
+    position:absolute;top:0;left:0;
+  }
+  .m-hero-img.active{opacity:1;transform:scale(1)}
+  .m-hero-img.hidden{opacity:0;transform:scale(1.05)}
+  .m-hero-overlay{
+    position:absolute;bottom:0;left:0;right:0;height:80px;
+    background:linear-gradient(transparent,#ffffff);
+    z-index:1;
+  }
+  .m-hero-label{
+    position:absolute;bottom:12px;left:16px;z-index:2;
+    background:rgba(0,0,0,.5);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
+    padding:6px 12px;border-radius:20px;
+    font-size:12px;color:#fff;font-weight:500;
+    display:flex;align-items:center;gap:6px;
+    opacity:0;transition:opacity .3s;
+  }
+  .m-sheet.expanded .m-hero-label{opacity:1}
 
   /* 每日标题 */
   .m-day-header{
@@ -265,6 +295,22 @@ body{font-family:'Noto Sans SC','Microsoft YaHei',sans-serif;background:#0a0f1a;
   .m-card:active{transform:scale(.98);background:#f0f0f0}
   .m-card-title{font-size:15px;font-weight:600;color:#1a1a1a;margin-bottom:3px}
   .m-card-desc{font-size:12px;color:#666;line-height:1.5}
+
+  /* 全开时卡片更丰富 */
+  .m-sheet.expanded .m-card{
+    background:#fff;border:1px solid rgba(0,0,0,.06);
+    box-shadow:0 2px 12px rgba(0,0,0,.06);
+    padding:16px;
+  }
+  .m-sheet.expanded .m-card-title{font-size:16px}
+  .m-sheet.expanded .m-card-desc{font-size:13px;color:#555}
+
+  /* 全开时路线卡片更突出 */
+  .m-sheet.expanded .m-route{
+    background:rgba(249,115,22,.08);border:1px solid rgba(249,115,22,.15);
+    padding:14px 18px;font-size:14px;
+    box-shadow:0 2px 12px rgba(249,115,22,.08);
+  }
   .m-card-tag{
     display:inline-flex;align-items:center;gap:4px;
     margin-top:6px;padding:3px 8px;
@@ -414,7 +460,12 @@ body{font-family:'Noto Sans SC','Microsoft YaHei',sans-serif;background:#0a0f1a;
     </div>
   </div>
   <div class="m-tabs" id="mTabs"></div>
-  <div class="m-content" id="mContent"></div>
+  <div class="m-content" id="mContent">
+    <div class="m-hero-showcase" id="mHeroShowcase">
+      <div class="m-hero-overlay"></div>
+      <div class="m-hero-label" id="mHeroLabel"><i class="fas fa-camera"></i> <span></span></div>
+    </div>
+  </div>
 </div>
 
 <!-- ===== 移动端详情弹窗 ===== -->
@@ -778,13 +829,37 @@ setTimeout(()=>{document.querySelector('.day-card').click();},500);
     document.querySelectorAll('.m-tab').forEach((t,i)=>{
       t.classList.toggle('active',i===idx);
     });
-    // 滚动Tab到可见
     const tab=tabsEl.children[idx];
     if(tab)tab.scrollIntoView({behavior:'smooth',inline:'center',block:'nearest'});
     renderDay(idx);
-    // 移动地图到该天位置
+    updateHeroImage(idx);
     const d=days[idx];
     if(d&&window.map){window.map.flyTo(d.coord,8,{duration:1})}
+  }
+
+  // 更新景点大图
+  const heroShowcase=document.getElementById('mHeroShowcase');
+  const heroLabel=document.getElementById('mHeroLabel');
+  function updateHeroImage(idx){
+    const d=days[idx];
+    if(!d)return;
+    // 移除旧图片
+    const oldImgs=heroShowcase.querySelectorAll('.m-hero-img');
+    // 加载新图片
+    const img=document.createElement('img');
+    img.className='m-hero-img hidden';
+    img.src=d.image;
+    img.alt=d.title;
+    img.onload=()=>{
+      heroShowcase.appendChild(img);
+      requestAnimationFrame(()=>{
+        oldImgs.forEach(o=>o.remove());
+        img.classList.remove('hidden');
+        img.classList.add('active');
+      });
+    };
+    // 更新标签
+    heroLabel.querySelector('span').textContent=d.title;
   }
 
   // 渲染某天的时间轴
@@ -1017,6 +1092,7 @@ setTimeout(()=>{document.querySelector('.day-card').click();},500);
 
   // 初始化第一天
   renderDay(0);
+  updateHeroImage(0);
 })();
 
 // === PWA 离线缓存 ===
