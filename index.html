@@ -486,6 +486,7 @@ body{font-family:'Noto Sans SC','Microsoft YaHei',sans-serif;background:#f0f7ff;
 <script>
 const days = [
   { id:0, day:"DAY 1", date:"9月24日 · 周三", title:"抵达乌鲁木齐", coord:[43.7826,87.6168], color:"#6366f1",
+    landmark:"https://images.unsplash.com/photo-1699794999362-2d5282915809?w=200&h=200&fit=crop",
     image:"https://res.klook.com/image/upload/fl_lossy.progressive,q_60/Mobile/City/zhier67ysllab4lfzlzi.jpg",
     route:{from:"上海 ✈️",to:"乌鲁木齐",km:"—",hours:"航班",highway:""},
     spots:[{icon:"🏙️",type:"city",name:"乌鲁木齐",desc:"新疆首府，抵达后取车采购补给"},{icon:"🍖",type:"city",name:"五一夜市",desc:"品尝烤肉、大盘鸡、馕、酸奶"}],
@@ -494,6 +495,7 @@ const days = [
     tips:"机场取车，采购自驾补给（水、零食、防晒、保暖衣物）",isRest:true
   },
   { id:1, day:"DAY 2", date:"9月25日 · 周四", title:"乌鲁木齐 → 乌尔禾", coord:[46.0950,85.6800], color:"#f59e0b",
+    landmark:"https://images.unsplash.com/photo-1721596572025-9fd9bcb7db5c?w=200&h=200&fit=crop",
     image:"https://images.unsplash.com/photo-1509316785289-025f5b846b35?w=800&h=400&fit=crop",
     route:{from:"乌鲁木齐",to:"乌尔禾",km:"400km",hours:"4.5h",highway:"G3014奎阿高速"},
     spots:[{icon:"⛽",type:"city",name:"克拉玛依",desc:"途经石油城，加油休息"},{icon:"👹",type:"desert",name:"魔鬼城",desc:"雅丹地貌，日落时分最美"}],
@@ -502,6 +504,7 @@ const days = [
     tips:"下午3-4点入园游魔鬼城，日落光影绝佳",isRest:true
   },
   { id:2, day:"DAY 3", date:"9月26日 · 周五", title:"乌尔禾 → 布尔津", coord:[47.7020,86.8606], color:"#f59e0b",
+    landmark:"https://images.unsplash.com/photo-1660441993832-43a21a28c127?w=200&h=200&fit=crop",
     image:"https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&h=400&fit=crop",
     route:{from:"乌尔禾",to:"布尔津",km:"280km",hours:"3h",highway:"G217国道"},
     spots:[{icon:"🏜️",type:"desert",name:"古尔班通古特沙漠",desc:"沿途戈壁荒漠风光"},{icon:"🌙",type:"city",name:"布尔津夜市",desc:"额尔齐斯河冷水鱼"}],
@@ -510,6 +513,7 @@ const days = [
     tips:"中午抵达布尔津，下午休整逛夜市"
   },
   { id:3, day:"DAY 4", date:"9月27日 · 周六", title:"布尔津 → 喀纳斯", coord:[48.5890,87.1200], color:"#3b82f6",
+    landmark:"https://images.unsplash.com/photo-1698253542757-dcafef34a137?w=200&h=200&fit=crop",
     image:"https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?w=800&h=400&fit=crop",
     route:{from:"布尔津",to:"喀纳斯",km:"160km",hours:"3h",highway:"S232省道"},
     spots:[{icon:"🏞️",type:"lake",name:"喀纳斯湖",desc:"乘船游湖，湖水碧蓝如宝石"},{icon:"🌊",type:"lake",name:"三湾徒步",desc:"神仙湾·月亮湾·卧龙湾，3-4h"}],
@@ -518,6 +522,7 @@ const days = [
     tips:"建议早出发避开排队；区间车可能排队1-2小时"
   },
   { id:4, day:"DAY 5", date:"9月28日 · 周日", title:"喀纳斯 → 禾木", coord:[48.5897,87.1436], color:"#22c55e",
+    landmark:"https://images.unsplash.com/photo-1729581173921-417f634eb443?w=200&h=200&fit=crop",
     image:"https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=800&h=400&fit=crop",
     route:{from:"喀纳斯",to:"禾木",km:"60km",hours:"1.5h",highway:"景区公路"},
     spots:[{icon:"🌅",type:"mountain",name:"神仙湾晨雾",desc:"清晨6:30-8:00拍摄晨雾"},{icon:"🏡",type:"village",name:"禾木村",desc:"中国第一村，金黄白桦林"},{icon:"⛰️",type:"mountain",name:"禾木观景台",desc:"俯瞰禾木村全景"}],
@@ -527,6 +532,7 @@ const days = [
     tips:"禾木住宿务必提前预订！夜晚可观星"
   },
   { id:5, day:"DAY 6", date:"9月29日 · 周一", title:"禾木深度游", coord:[48.5897,87.1436], color:"#22c55e",
+    landmark:"https://images.unsplash.com/photo-1729581173921-417f634eb443?w=200&h=200&fit=crop",
     image:"https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?w=800&h=400&fit=crop",
     route:{from:"禾木",to:"禾木",km:"村内",hours:"步行/骑行",highway:""},
     spots:[{icon:"🌄",type:"mountain",name:"禾木日出",desc:"清晨6:00观景台"},{icon:"🚴",type:"grass",name:"河谷骑行",desc:"穿越白桦林和草原"},{icon:"🐴",type:"grass",name:"骑马体验",desc:"草原骑马"}],
@@ -544,6 +550,7 @@ const days = [
     tips:"上午离开禾木，下午返回布尔津"
   },
   { id:7, day:"DAY 8", date:"10月1日 · 周三 🇨🇳", title:"布尔津 → 赛里木湖", coord:[44.5695,81.1845], color:"#0ea5e9",
+    landmark:"https://images.unsplash.com/photo-1738733656279-e22f692e68c8?w=200&h=200&fit=crop",
     image:"https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&h=400&fit=crop",
     route:{from:"布尔津",to:"赛里木湖",km:"550km",hours:"6h",highway:"G217→G3014→G30"},
     spots:[{icon:"🏔️",type:"lake",name:"赛里木湖",desc:"大西洋最后一滴眼泪"},{icon:"🌅",type:"lake",name:"赛里木湖日落",desc:"草原泛黄+雪山倒影"}],
@@ -560,6 +567,7 @@ const days = [
     tips:"今天行程轻松，好好休息",isRest:true
   },
   { id:9, day:"DAY 10", date:"10月3日 · 周五", title:"伊宁 → 那拉提", coord:[43.2253,84.1392], color:"#10b981",
+    landmark:"https://images.unsplash.com/photo-1696330517289-db233d87e13f?w=200&h=200&fit=crop",
     image:"https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=800&h=400&fit=crop",
     route:{from:"伊宁",to:"那拉提",km:"270km",hours:"4h",highway:"G218国道"},
     spots:[{icon:"🏔️",type:"grass",name:"那拉提草原",desc:"世界四大草原之一"},{icon:"🐴",type:"grass",name:"草原骑马",desc:"策马奔腾，雪山连绵"}],
@@ -568,6 +576,7 @@ const days = [
     tips:"G218沿伊犁河谷，风景优美"
   },
   { id:10, day:"DAY 11", date:"10月4日 · 周六", title:"那拉提 → 库尔勒", coord:[41.7259,86.1746], color:"#f97316",
+    landmark:"https://images.unsplash.com/photo-1624291732728-651136d8a3d4?w=200&h=200&fit=crop",
     image:"https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=800&h=400&fit=crop",
     route:{from:"那拉提",to:"库尔勒",km:"360km",hours:"5h",highway:"G218→G217独库公路"},
     spots:[{icon:"🛣️",type:"mountain",name:"独库公路",desc:"中国最美公路之一"},{icon:"🏔️",type:"mountain",name:"天山风光",desc:"草原到戈壁垂直景观"}],
@@ -576,6 +585,7 @@ const days = [
     tips:"⚠️ 独库公路10月初可能因降雪封路，提前确认路况！",isHeavy:true
   },
   { id:11, day:"DAY 12", date:"10月5日 · 周日", title:"库尔勒 → 乌鲁木齐", coord:[43.7826,87.6168], color:"#6366f1",
+    landmark:"https://images.unsplash.com/photo-1699794999362-2d5282915809?w=200&h=200&fit=crop",
     image:"https://res.klook.com/image/upload/fl_lossy.progressive,q_60/Mobile/City/zhier67ysllab4lfzlzi.jpg",
     route:{from:"库尔勒",to:"乌鲁木齐",km:"470km",hours:"5.5h",highway:"G30连霍高速"},
     spots:[{icon:"🛍️",type:"city",name:"大巴扎",desc:"采购干果、薰衣草精油"},{icon:"🍖",type:"city",name:"告别美食",desc:"最后的大盘鸡/拌面"}],
@@ -584,6 +594,7 @@ const days = [
     tips:"下午抵达，采购特产，晚上好好休息"
   },
   { id:12, day:"DAY 13", date:"10月6日 · 周一", title:"乌鲁木齐 · 返程", coord:[43.7826,87.6168], color:"#6366f1",
+    landmark:"https://images.unsplash.com/photo-1699794999362-2d5282915809?w=200&h=200&fit=crop",
     image:"https://res.klook.com/image/upload/fl_lossy.progressive,q_60/Mobile/City/zhier67ysllab4lfzlzi.jpg",
     route:{from:"乌鲁木齐",to:"回家",km:"—",hours:"各自的航班",highway:""},
     spots:[{icon:"🛍️",type:"city",name:"大巴扎逛逛",desc:"最后采购干果特产"},{icon:"🚗",type:"city",name:"还车",desc:"确认还车时间地点"},{icon:"✈️",type:"city",name:"各回各家",desc:"预留充足时间去机场"}],
@@ -656,13 +667,14 @@ L.polyline(routeCoords,{color:'#06b6d4',weight:2,opacity:.4,smoothFactor:1,lineC
 
 const markers=[];
 days.forEach((d,i)=>{
+  const imgSrc=d.landmark||d.image;
   const icon=L.divIcon({
     className:'custom-marker',
     html:`<div class="marker-bubble" style="--mc:${d.color}">
-      <img class="marker-img" src="${d.image}" alt="">
+      <img class="marker-img" src="${imgSrc}" alt="">
       <div class="marker-num" style="background:${d.color}">${i+1}</div>
     </div>`,
-    iconSize:[44,56],iconAnchor:[22,56],popupAnchor:[0,-58]
+    iconSize:[48,60],iconAnchor:[24,60],popupAnchor:[0,-62]
   });
   const marker=L.marker(d.coord,{icon}).addTo(map);
   marker.bindPopup(`<div style="font-family:'Noto Sans SC',sans-serif;min-width:200px;padding:4px"><div style="font-size:11px;color:#94a3b8;font-weight:700;letter-spacing:1px">${d.day}</div><div style="font-size:16px;font-weight:700;color:#1e293b;margin:6px 0">${d.title}</div><div style="font-size:12px;color:#64748b">${d.date}</div>${d.route.km!=='—'?`<div style="margin-top:8px;font-size:13px;color:#475569">🚗 ${d.route.from} → ${d.route.to}<br>${d.route.km} · ${d.route.hours}</div>`:''}</div>`,{className:'custom-popup',maxWidth:280});
@@ -1327,31 +1339,26 @@ function saveOffline(){
 .custom-popup .leaflet-popup-content{margin:14px 18px!important}
 .leaflet-control-zoom a{background:#fff!important;color:#333!important;border:1px solid rgba(0,0,0,.1)!important}
 .leaflet-tile-pane{filter:none}
-/* 地图标记气泡 */
+/* 地图标记气泡（参考圆周旅途样式） */
 .marker-bubble{
-  width:44px;height:56px;position:relative;
+  width:48px;position:relative;
   display:flex;flex-direction:column;align-items:center;
   transition:transform .3s,opacity .3s;
 }
 .marker-img{
-  width:44px;height:44px;border-radius:12px;object-fit:cover;
-  border:3px solid #fff;box-shadow:0 2px 10px rgba(0,0,0,.25);
-}
-.marker-img::after{
-  content:'';position:absolute;bottom:-6px;left:50%;transform:translateX(-50%);
-  width:0;height:0;border-left:6px solid transparent;border-right:6px solid transparent;
-  border-top:8px solid #fff;
+  width:48px;height:48px;border-radius:14px;object-fit:cover;
+  border:3px solid #fff;box-shadow:0 3px 12px rgba(0,0,0,.3);
 }
 .marker-num{
-  position:absolute;top:-4px;right:-4px;
+  position:absolute;top:-5px;right:-5px;
   width:20px;height:20px;border-radius:50%;
   font-size:10px;font-weight:700;color:#fff;
   display:flex;align-items:center;justify-content:center;
-  border:2px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.2);
+  border:2px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.25);
 }
 .marker-dimmed{opacity:.3!important;transform:scale(.7)!important}
-.marker-active{transform:scale(1.15)!important;z-index:9999!important}
-.marker-active .marker-img{box-shadow:0 4px 20px rgba(0,0,0,.35);border-color:var(--mc,#0ea5e9)}
+.marker-active{transform:scale(1.2)!important;z-index:9999!important}
+.marker-active .marker-img{box-shadow:0 4px 24px rgba(0,0,0,.4);border-color:var(--mc,#0ea5e9);border-width:3px}
 .spot-pin{
   width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;
   font-size:13px;color:#fff;box-shadow:0 2px 8px rgba(0,0,0,.25);
