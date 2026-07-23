@@ -898,20 +898,19 @@ setTimeout(()=>{document.querySelector('.day-card').click();},500);
     const sheet=document.getElementById('mSheet');
     const isExpanded=sheet&&sheet.classList.contains('expanded');
     const isCollapsed=sheet&&sheet.classList.contains('collapsed');
-    const vh=window.innerHeight;
-    const mapH=vh*0.35; // 地图高度占35%
 
     if(isExpanded){
       // 全开：地图几乎不可见，居中即可
       window.map.flyTo(d.coord,8,{duration:1});
     }else if(isCollapsed){
-      // 收起：地图全屏可见，焦点居中偏下一点
-      window.map.flyTo([d.coord[0]-0.05,d.coord[1]],8,{duration:1});
+      // 收起：地图全屏可见，正常居中
+      window.map.flyTo(d.coord,8,{duration:1});
     }else{
       // 半开：Sheet占65%，地图只露上面35%
-      // 焦点应放在地图可见区域的中心（即屏幕上方17.5%处）
-      const offsetLat=vh*0.15/111000*1000; // 屏幕上方17.5%对应的纬度偏移
-      window.map.flyTo([d.coord[0]+offsetLat,d.coord[1]],8,{duration:1});
+      // 焦点往上移，让标记出现在可见区域中心
+      const mapVisibleH=window.innerHeight*0.35;
+      const centerOffset=mapVisibleH*0.3/111320; // 约屏幕可见区中心偏上
+      window.map.flyTo([d.coord[0]+centerOffset,d.coord[1]],8,{duration:1});
     }
   }
 
@@ -950,27 +949,27 @@ setTimeout(()=>{document.querySelector('.day-card').click();},500);
     if(!d||d.route.km==='—')return;
 
     const spots=d.spots;
-    if(spots.length<2)return;
+    if(spots.length<1)return;
 
     const center=d.coord;
-    const radius=0.03;
     const routeCoords=[center];
 
     spots.forEach((s,i)=>{
-      const angle=(2*Math.PI*i/spots.length)-Math.PI/2;
-      const r=radius*(0.6+Math.random()*0.4);
+      // 景点围绕主坐标分布
+      const angle=(2*Math.PI*i/Math.max(spots.length,2))-Math.PI/2;
+      const r=0.025*(0.7+Math.random()*0.3);
       const lat=center[0]+r*Math.cos(angle);
-      const lng=center[1]+r*Math.sin(angle)*1.5;
+      const lng=center[1]+r*Math.sin(angle)*1.3;
       routeCoords.push([lat,lng]);
 
-      // 有图片用图片气泡，没有用emoji
-      const hasImg=s.img;
+      // 有图片的景点用图片气泡，没有的用emoji
+      const hasImg=!!s.img;
       const spotIcon=L.divIcon({
         className:'spot-marker',
         html:hasImg
-          ?`<div class="spot-bubble"><img class="spot-img" src="${s.img}" alt=""><div class="spot-label">${s.name}</div></div>`
-          :`<div class="spot-pin" style="background:linear-gradient(135deg,#0ea5e9,#06b6d4)">${s.icon}</div>`,
-        iconSize:hasImg?[60,70]:[28,28],iconAnchor:hasImg?[30,70]:[14,28],popupAnchor:hasImg?[0,-72]:[0,-30]
+          ?`<div class="spot-bubble"><img class="spot-img" src="${s.img}" alt="${s.name}"><div class="spot-label">${s.name}</div></div>`
+          :`<div class="spot-pin"><span>${s.icon}</span></div>`,
+        iconSize:hasImg?[56,68]:[30,30],iconAnchor:hasImg?[28,68]:[15,30],popupAnchor:hasImg?[0,-70]:[0,-32]
       });
       const m=L.marker([lat,lng],{icon:spotIcon}).addTo(window.map);
       m.bindPopup(`<div style="font-family:'Noto Sans SC',sans-serif;padding:2px 4px;font-size:13px"><b>${s.icon} ${s.name}</b><br><span style="color:#666;font-size:12px">${s.desc}</span></div>`,{className:'custom-popup',maxWidth:220});
@@ -1390,26 +1389,28 @@ function saveOffline(){
 .marker-active{transform:scale(1.2)!important;z-index:9999!important}
 .marker-active .marker-img{box-shadow:0 4px 24px rgba(0,0,0,.4);border-color:var(--mc,#0ea5e9);border-width:3px}
 .spot-pin{
-  width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;
-  font-size:13px;color:#fff;box-shadow:0 2px 8px rgba(0,0,0,.25);
+  width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+  font-size:14px;color:#fff;
+  background:linear-gradient(135deg,#0ea5e9,#06b6d4);
+  box-shadow:0 2px 8px rgba(14,165,233,.4);
   border:2px solid #fff;transition:transform .2s;
 }
 .spot-pin:active{transform:scale(1.2)}
-/* 景点图片气泡 */
+/* 景点图片气泡（参考圆周旅途样式） */
 .spot-bubble{
-  width:60px;display:flex;flex-direction:column;align-items:center;
+  width:56px;display:flex;flex-direction:column;align-items:center;
 }
 .spot-img{
-  width:52px;height:52px;border-radius:14px;object-fit:cover;
-  border:3px solid #fff;box-shadow:0 2px 10px rgba(0,0,0,.3);
+  width:50px;height:50px;border-radius:14px;object-fit:cover;
+  border:3px solid #fff;box-shadow:0 3px 12px rgba(0,0,0,.3);
 }
 .spot-label{
-  margin-top:4px;padding:2px 8px;
-  background:#fff;border-radius:8px;
-  font-size:10px;font-weight:600;color:#334155;
-  box-shadow:0 1px 6px rgba(0,0,0,.12);
-  white-space:nowrap;max-width:80px;overflow:hidden;text-overflow:ellipsis;
-  text-align:center;
+  margin-top:3px;padding:2px 8px;
+  background:#fff;border-radius:10px;
+  font-size:10px;font-weight:600;color:#1a1a1a;
+  box-shadow:0 2px 8px rgba(0,0,0,.15);
+  white-space:nowrap;max-width:90px;overflow:hidden;text-overflow:ellipsis;
+  text-align:center;line-height:1.4;
 }
 </style>
 </body>
