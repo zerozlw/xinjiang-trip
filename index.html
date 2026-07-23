@@ -620,12 +620,20 @@ const map=window.map=L.map('map',{center:[44.5,85],zoom:7,zoomControl:false,attr
 L.control.zoom({position:'bottomright'}).addTo(map);
 L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:18,attribution:'© OpenStreetMap'}).addTo(map);
 
-L.polyline(routeCoords,{color:'#f97316',weight:10,opacity:.3,smoothFactor:1}).addTo(map);
-L.polyline(routeCoords,{color:'#f97316',weight:4,opacity:.9,smoothFactor:1,lineCap:'round',lineJoin:'round'}).addTo(map);
+L.polyline(routeCoords,{color:'#0ea5e9',weight:12,opacity:.15,smoothFactor:1}).addTo(map);
+L.polyline(routeCoords,{color:'#0ea5e9',weight:4,opacity:.85,smoothFactor:1,lineCap:'round',lineJoin:'round'}).addTo(map);
+L.polyline(routeCoords,{color:'#06b6d4',weight:2,opacity:.4,smoothFactor:1,lineCap:'round',lineJoin:'round'}).addTo(map);
 
 const markers=[];
 days.forEach((d,i)=>{
-  const icon=L.divIcon({className:'custom-marker',html:`<div class="marker-pin" style="background:${d.color}"><span>${i+1}</span></div>`,iconSize:[36,36],iconAnchor:[18,36],popupAnchor:[0,-40]});
+  const icon=L.divIcon({
+    className:'custom-marker',
+    html:`<div class="marker-bubble" style="--mc:${d.color}">
+      <img class="marker-img" src="${d.image}" alt="">
+      <div class="marker-num" style="background:${d.color}">${i+1}</div>
+    </div>`,
+    iconSize:[44,56],iconAnchor:[22,56],popupAnchor:[0,-58]
+  });
   const marker=L.marker(d.coord,{icon}).addTo(map);
   marker.bindPopup(`<div style="font-family:'Noto Sans SC',sans-serif;min-width:200px;padding:4px"><div style="font-size:11px;color:#94a3b8;font-weight:700;letter-spacing:1px">${d.day}</div><div style="font-size:16px;font-weight:700;color:#1e293b;margin:6px 0">${d.title}</div><div style="font-size:12px;color:#64748b">${d.date}</div>${d.route.km!=='—'?`<div style="margin-top:8px;font-size:13px;color:#475569">🚗 ${d.route.from} → ${d.route.to}<br>${d.route.km} · ${d.route.hours}</div>`:''}</div>`,{className:'custom-popup',maxWidth:280});
   marker.on('click',()=>showDetail(d));
@@ -846,20 +854,17 @@ setTimeout(()=>{document.querySelector('.day-card').click();},500);
     markers.forEach((m,i)=>{
       const el=m.getElement();
       if(!el)return;
-      const pin=el.querySelector('.marker-pin');
-      if(!pin)return;
+      const bubble=el.querySelector('.marker-bubble');
+      if(!bubble)return;
       const mCoord=m.getLatLng().lat.toFixed(4)+','+m.getLatLng().lng.toFixed(4);
-      pin.classList.remove('marker-dimmed','marker-active');
+      bubble.classList.remove('marker-dimmed','marker-active');
       if(i===idx){
-        // 当天：高亮放大
-        pin.classList.add('marker-active');
+        bubble.classList.add('marker-active');
         el.style.display='';
       }else if(mCoord===activeCoord){
-        // 同坐标但不是当天：完全隐藏
         el.style.display='none';
       }else{
-        // 其他地点：缩小变淡
-        pin.classList.add('marker-dimmed');
+        bubble.classList.add('marker-dimmed');
         el.style.display='';
       }
     });
@@ -895,7 +900,7 @@ setTimeout(()=>{document.querySelector('.day-card').click();},500);
 
       const spotIcon=L.divIcon({
         className:'spot-marker',
-        html:`<div class="spot-pin" style="background:${d.color}">${s.icon}</div>`,
+        html:`<div class="spot-pin" style="background:linear-gradient(135deg,#0ea5e9,#06b6d4)">${s.icon}</div>`,
         iconSize:[28,28],iconAnchor:[14,28],popupAnchor:[0,-30]
       });
       const m=L.marker([lat,lng],{icon:spotIcon}).addTo(window.map);
@@ -1292,9 +1297,31 @@ function saveOffline(){
 .custom-popup .leaflet-popup-content{margin:14px 18px!important}
 .leaflet-control-zoom a{background:#fff!important;color:#333!important;border:1px solid rgba(0,0,0,.1)!important}
 .leaflet-tile-pane{filter:none}
-.marker-pin{transition:transform .3s,opacity .3s,box-shadow .3s}
-.marker-dimmed{opacity:.35!important;transform:scale(.7)!important;box-shadow:none!important}
-.marker-active{transform:scale(1.25)!important;box-shadow:0 4px 20px rgba(0,0,0,.4)!important;z-index:9999!important}
+/* 地图标记气泡 */
+.marker-bubble{
+  width:44px;height:56px;position:relative;
+  display:flex;flex-direction:column;align-items:center;
+  transition:transform .3s,opacity .3s;
+}
+.marker-img{
+  width:44px;height:44px;border-radius:12px;object-fit:cover;
+  border:3px solid #fff;box-shadow:0 2px 10px rgba(0,0,0,.25);
+}
+.marker-img::after{
+  content:'';position:absolute;bottom:-6px;left:50%;transform:translateX(-50%);
+  width:0;height:0;border-left:6px solid transparent;border-right:6px solid transparent;
+  border-top:8px solid #fff;
+}
+.marker-num{
+  position:absolute;top:-4px;right:-4px;
+  width:20px;height:20px;border-radius:50%;
+  font-size:10px;font-weight:700;color:#fff;
+  display:flex;align-items:center;justify-content:center;
+  border:2px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.2);
+}
+.marker-dimmed{opacity:.3!important;transform:scale(.7)!important}
+.marker-active{transform:scale(1.15)!important;z-index:9999!important}
+.marker-active .marker-img{box-shadow:0 4px 20px rgba(0,0,0,.35);border-color:var(--mc,#0ea5e9)}
 .spot-pin{
   width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;
   font-size:13px;color:#fff;box-shadow:0 2px 8px rgba(0,0,0,.25);
