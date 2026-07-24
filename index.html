@@ -890,7 +890,7 @@ setTimeout(()=>{document.querySelector('.day-card').click();},500);
     }else{
       // 半开：Sheet占65%，地图只露上面35%
       // 焦点大幅上移让地点标记在可见区域
-      window.map.flyTo([d.coord[0]-0.25,d.coord[1]],8,{duration:1});
+      window.map.flyTo([d.coord[0]-0.5,d.coord[1]],8,{duration:1});
     }
   }
 
