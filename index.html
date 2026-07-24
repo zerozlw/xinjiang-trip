@@ -255,21 +255,21 @@ body{font-family:'Noto Sans SC','Microsoft YaHei',sans-serif;background:#f0f7ff;
   .m-route .m-km{color:#0ea5e9;font-weight:700}
 
   /* 时间轴 */
-  .m-timeline{padding:0 16px 16px 16px}
-  .m-node{display:flex;gap:12px;position:relative;padding-bottom:4px}
+  .m-timeline{padding:0 16px 20px 16px}
+  .m-node{display:flex;gap:14px;position:relative;padding-bottom:6px;align-items:flex-start}
   .m-node:last-child{padding-bottom:0}
 
-  /* 时间轴线+点 */
-  .m-axis{display:flex;flex-direction:column;align-items:center;width:28px;flex-shrink:0;position:relative}
+  /* 时间轴线+节点 */
+  .m-axis{display:flex;flex-direction:column;align-items:center;width:32px;flex-shrink:0;position:relative}
   .m-dot{
-    width:28px;height:28px;border-radius:50%;
+    width:32px;height:32px;border-radius:50%;
     display:flex;align-items:center;justify-content:center;
-    font-size:12px;font-weight:700;color:#fff;
+    font-size:14px;color:#fff;
     flex-shrink:0;z-index:1;
     background:linear-gradient(135deg,#0ea5e9,#06b6d4);
-    box-shadow:0 2px 10px rgba(14,165,233,.3);
+    box-shadow:0 2px 10px rgba(14,165,233,.25);
   }
-  .m-line{width:2px;flex:1;background:rgba(14,165,233,.12);margin-top:4px}
+  .m-line{width:2px;flex:1;background:repeating-linear-gradient(to bottom,rgba(0,0,0,.1) 0,rgba(0,0,0,.1) 4px,transparent 4px,transparent 8px);margin-top:6px}
   .m-node:last-child .m-line{display:none}
 
   /* 节点内容卡片 */
@@ -278,20 +278,21 @@ body{font-family:'Noto Sans SC','Microsoft YaHei',sans-serif;background:#f0f7ff;
     background:#fff;
     border:1px solid #e8f0fe;
     border-radius:16px;
-    padding:14px;
-    margin-bottom:8px;
-    cursor:pointer;
+    padding:0;
+    margin-bottom:10px;
     transition:transform .15s,box-shadow .2s;
     -webkit-tap-highlight-color:transparent;
-    box-shadow:0 1px 6px rgba(0,120,200,.04);
-    display:flex;gap:12px;align-items:flex-start;
+    box-shadow:0 2px 12px rgba(0,120,200,.06);
+    display:flex;gap:0;align-items:stretch;
+    overflow:hidden;
   }
-  .m-card:active{transform:scale(.98);box-shadow:0 0 0 rgba(0,0,0,0)}
+  .m-card:active{transform:scale(.98)}
   .m-card-img{
-    width:64px;height:64px;border-radius:12px;object-fit:cover;flex-shrink:0;
-    box-shadow:0 1px 4px rgba(0,0,0,.1);
+    width:100px;height:auto;min-height:90px;object-fit:cover;flex-shrink:0;
   }
-  .m-card-text{flex:1;min-width:0}
+  .m-card-text{flex:1;padding:12px 14px;display:flex;flex-direction:column;justify-content:center;min-width:0}
+  .m-card-title{font-size:15px;font-weight:600;color:#0a2540;margin-bottom:4px}
+  .m-card-desc{font-size:12px;color:#5a6f8c;line-height:1.5}
   .m-card-title{font-size:15px;font-weight:600;color:#0a2540;margin-bottom:3px}
   .m-card-desc{font-size:12px;color:#7c8db5;line-height:1.5}
   .m-card-tag{
@@ -318,22 +319,23 @@ body{font-family:'Noto Sans SC','Microsoft YaHei',sans-serif;background:#f0f7ff;
   }
 
   /* 酒店/美食信息卡 */
-  .m-info-card{flex:1;border-radius:16px;padding:14px;margin-bottom:8px}
-  .m-info-card.hotel{background:linear-gradient(135deg,rgba(16,185,129,.06),rgba(34,197,94,.04));border:1px solid rgba(16,185,129,.15)}
-  .m-info-card.food{background:linear-gradient(135deg,rgba(244,63,94,.06),rgba(251,146,60,.04));border:1px solid rgba(244,63,94,.12)}
+  .m-info-card{flex:1;border-radius:16px;margin-bottom:10px;overflow:hidden;border:1px solid #e8f0fe;background:#fff;box-shadow:0 2px 12px rgba(0,120,200,.06)}
+  .m-info-top{display:flex;gap:0}
+  .m-info-img{width:100px;height:90px;object-fit:cover;flex-shrink:0}
+  .m-info-body{flex:1;padding:12px 14px;display:flex;flex-direction:column;justify-content:center}
   .m-info-card .m-info-label{
     font-size:11px;font-weight:600;letter-spacing:.3px;
-    margin-bottom:6px;display:flex;align-items:center;gap:5px;
+    margin-bottom:4px;display:flex;align-items:center;gap:5px;
   }
   .m-info-card.hotel .m-info-label{color:#10b981}
   .m-info-card.food .m-info-label{color:#f43f5e}
-  .m-info-card .m-info-text{font-size:13px;color:#334155;line-height:1.6}
+  .m-info-card .m-info-text{font-size:13px;color:#334155;line-height:1.5}
+  .m-info-card .m-info-sub{font-size:11px;color:#7c8db5;margin-top:2px}
   .m-info-card .m-booked{
-    display:flex;align-items:center;gap:5px;
-    margin-top:8px;padding:5px 12px;
-    background:rgba(16,185,129,.1);border-radius:10px;
-    font-size:11px;color:#10b981;font-weight:600;
-    width:fit-content;
+    display:inline-flex;align-items:center;gap:4px;
+    margin-top:6px;padding:3px 10px;
+    background:rgba(16,185,129,.1);border-radius:8px;
+    font-size:10px;color:#10b981;font-weight:600;
   }
 
   /* 提示条 */
@@ -478,6 +480,8 @@ const days = [
     spots:[{icon:"🏙️",type:"city",name:"大巴扎",desc:"国际大巴扎，采购干果特产",img:"https://images.unsplash.com/photo-1699794999416-1b7b58b842dc?w=200&h=200&fit=crop"},{icon:"🍖",type:"city",name:"五一夜市",desc:"品尝烤肉、大盘鸡、馕、酸奶"}],
     food:"🍗 血站大盘鸡（老字号，友好路）· 五一夜市红柳烤肉 · 吴佳抓饭 · 椒麻鸡 · 馕坑肉 · 酸奶疙瘩",
     hotel:"乌鲁木齐市区酒店 · 预估 300–500元/间",
+    hotelImg:"https://images.unsplash.com/photo-1565516119206-9d35a7383153?w=200&h=120&fit=crop",
+    foodImg:"https://images.unsplash.com/photo-1619261148028-967ca5e0ccc3?w=200&h=120&fit=crop",
     tips:"机场取车，采购自驾补给（水、零食、防晒、保暖衣物）",isRest:true
   },
   { id:1, day:"DAY 2", date:"9月25日 · 周四", title:"乌鲁木齐 → 乌尔禾", coord:[46.0950,85.6800], color:"#f59e0b",
@@ -487,6 +491,8 @@ const days = [
     spots:[{icon:"⛽",type:"city",name:"克拉玛依",desc:"途经石油城，加油休息",img:"https://images.unsplash.com/photo-1737105221863-999bfabbdaf3?w=200&h=200&fit=crop"},{icon:"👹",type:"desert",name:"魔鬼城",desc:"雅丹地貌，日落时分最美",img:"https://plus.unsplash.com/premium_photo-1697730097471-27814de23a1f?w=200&h=200&fit=crop"}],
     food:"🍖 克拉玛依烤全羊 · 油城大盘鸡 · 馕坑肉 · 凉皮子（沿途服务区就有）",
     hotel:"乌尔禾区酒店 · 预估 200–300元/间",
+    hotelImg:"https://images.unsplash.com/photo-1676108022071-1a0ef051f935?w=200&h=120&fit=crop",
+    foodImg:"https://images.unsplash.com/photo-1619261148028-967ca5e0ccc3?w=200&h=120&fit=crop",
     tips:"下午3-4点入园游魔鬼城，日落光影绝佳",isRest:true
   },
   { id:2, day:"DAY 3", date:"9月26日 · 周五", title:"乌尔禾 → 布尔津", coord:[47.7020,86.8606], color:"#f59e0b",
@@ -496,6 +502,8 @@ const days = [
     spots:[{icon:"🏜️",type:"desert",name:"古尔班通古特沙漠",desc:"沿途戈壁荒漠风光"},{icon:"🌙",type:"city",name:"布尔津夜市",desc:"额尔齐斯河冷水鱼",img:"https://images.unsplash.com/photo-1758890844033-1b051887fc7b?w=200&h=200&fit=crop"}],
     food:"🐟 河堤夜市烤狗鱼（必吃！）· 五道黑冷水鱼 · 哈萨克手抓肉 · 格瓦斯（俄式饮料）· 奶酪包",
     hotel:"布尔津县城酒店 · 预估 250–400元/间",
+    hotelImg:"https://plus.unsplash.com/premium_photo-1734543932645-6098590dc1ee?w=200&h=120&fit=crop",
+    foodImg:"https://plus.unsplash.com/premium_photo-1693221705305-6eff5fa8e483?w=200&h=120&fit=crop",
     tips:"中午抵达布尔津，下午休整逛夜市"
   },
   { id:3, day:"DAY 4", date:"9月27日 · 周六", title:"布尔津 → 喀纳斯", coord:[48.5890,87.1200], color:"#3b82f6",
@@ -505,6 +513,8 @@ const days = [
     spots:[{icon:"🏞️",type:"lake",name:"喀纳斯湖",desc:"乘船游湖，湖水碧蓝如宝石",img:"https://images.unsplash.com/photo-1768346131599-e8e61c0219d4?w=200&h=200&fit=crop"},{icon:"🌊",type:"lake",name:"三湾徒步",desc:"神仙湾·月亮湾·卧龙湾，3-4h",img:"https://plus.unsplash.com/premium_photo-1669613233573-4911a0a81c63?w=200&h=200&fit=crop"}],
     food:"🐑 清炖羊肉（景区内图瓦人餐馆）· 奶茶配包尔萨克 · 风干马肉 · 野蜂蜜 · 贾登峪餐厅选择较多",
     hotel:"贾登峪酒店/小木屋 · 预估 800–1500元/间",
+    hotelImg:"https://images.unsplash.com/photo-1676108022071-1a0ef051f935?w=200&h=120&fit=crop",
+    foodImg:"https://plus.unsplash.com/premium_photo-1724763204617-3a9c9e811c8d?w=200&h=120&fit=crop",
     tips:"建议早出发避开排队；区间车可能排队1-2小时"
   },
   { id:4, day:"DAY 5", date:"9月28日 · 周日", title:"喀纳斯 → 禾木", coord:[48.5897,87.1436], color:"#22c55e",
@@ -515,6 +525,8 @@ const days = [
     food:"🏡 图瓦人手抓肉 · 奶茶泡馕 · 烤羊排 · 奶疙瘩 · 村里小木屋餐馆都不踩雷",
     hotel:"✅ 已定酒店",
     hotelBooked:{name:"知山SAN逸境度假酒店(禾木风景区店)",room:"1张1.8大床 + 2张1.2单人床"},
+    hotelImg:"https://plus.unsplash.com/premium_photo-1661962821338-c07da63995f9?w=200&h=120&fit=crop",
+    foodImg:"https://plus.unsplash.com/premium_photo-1724763204617-3a9c9e811c8d?w=200&h=120&fit=crop",
     tips:"禾木住宿务必提前预订！夜晚可观星"
   },
   { id:5, day:"DAY 6", date:"9月29日 · 周一", title:"禾木深度游", coord:[48.5897,87.1436], color:"#22c55e",
@@ -542,6 +554,8 @@ const days = [
     spots:[{icon:"🏔️",type:"lake",name:"赛里木湖",desc:"大西洋最后一滴眼泪",img:"https://images.unsplash.com/photo-1779638529211-71203742f555?w=200&h=200&fit=crop"},{icon:"🌅",type:"lake",name:"赛里木湖日落",desc:"草原泛黄+雪山倒影"}],
     food:"🐑 蒙古包手抓羊肉 · 奶茶 · 馕 · 赛里木湖景区内餐饮有限，建议自带干粮或在精河县吃",
     hotel:"赛里木湖蒙古包/精河酒店 · 预估 400–800元/间",
+    hotelImg:"https://images.unsplash.com/photo-1676108022071-1a0ef051f935?w=200&h=120&fit=crop",
+    foodImg:"https://plus.unsplash.com/premium_photo-1724763204617-3a9c9e811c8d?w=200&h=120&fit=crop",
     tips:"今天路程较长建议早出发；海拔2000m+，夜间-5°C",isHeavy:true
   },
   { id:8, day:"DAY 9", date:"10月2日 · 周四", title:"赛里木湖 → 伊宁", coord:[43.9100,81.3100], color:"#8b5cf6",
@@ -550,6 +564,8 @@ const days = [
     spots:[{icon:"🌉",type:"mountain",name:"果子沟大桥",desc:"新疆第一高桥"},{icon:"🏘️",type:"city",name:"喀赞其",desc:"蓝色小巷、手工冰淇淋",img:"https://images.unsplash.com/photo-1694608014679-cc6ab44990f8?w=200&h=200&fit=crop"},{icon:"🕌",type:"city",name:"伊宁市区",desc:"伊犁河落日"}],
     food:"🍦 喀赞其手工冰淇淋（必吃！）· 汉人街面肺子+米肠子 · 烤包子 · 凉皮 · 卡瓦斯（酸甜饮料）",
     hotel:"伊宁市区酒店 · 预估 300–500元/间",
+    hotelImg:"https://images.unsplash.com/photo-1565516119206-9d35a7383153?w=200&h=120&fit=crop",
+    foodImg:"https://plus.unsplash.com/premium_photo-1677955072995-0066c6507a10?w=200&h=120&fit=crop",
     tips:"今天行程轻松，好好休息",isRest:true
   },
   { id:9, day:"DAY 10", date:"10月3日 · 周五", title:"伊宁 → 那拉提", coord:[43.2253,84.1392], color:"#10b981",
@@ -559,6 +575,8 @@ const days = [
     spots:[{icon:"🏔️",type:"grass",name:"那拉提草原",desc:"世界四大草原之一",img:"https://images.unsplash.com/photo-1696330517289-db233d87e13f?w=200&h=200&fit=crop"},{icon:"🐴",type:"grass",name:"草原骑马",desc:"策马奔腾，雪山连绵"}],
     food:"🐎 哈萨克手抓肉（牧家乐现宰）· 马肉纳仁 · 熏马肠 · 马奶酒 · 镇上小馆子拌面也地道",
     hotel:"那拉提镇酒店 · 预估 400–600元/间",
+    hotelImg:"https://plus.unsplash.com/premium_photo-1661962821338-c07da63995f9?w=200&h=120&fit=crop",
+    foodImg:"https://plus.unsplash.com/premium_photo-1724763204617-3a9c9e811c8d?w=200&h=120&fit=crop",
     tips:"G218沿伊犁河谷，风景优美"
   },
   { id:10, day:"DAY 11", date:"10月4日 · 周六", title:"那拉提 → 库尔勒", coord:[41.7259,86.1746], color:"#f97316",
@@ -568,6 +586,8 @@ const days = [
     spots:[{icon:"🛣️",type:"mountain",name:"独库公路",desc:"中国最美公路之一",img:"https://plus.unsplash.com/premium_photo-1726833616244-d5a50a0fcd7c?w=200&h=200&fit=crop"},{icon:"🏔️",type:"mountain",name:"天山风光",desc:"草原到戈壁垂直景观",img:"https://images.unsplash.com/photo-1642129412847-ea049c5def2e?w=200&h=200&fit=crop"}],
     food:"🍐 库尔勒香梨（当地特产，路边就有卖）· 缸子肉 · 馕坑肉 · 烤全羊 · 孔雀河边美食街",
     hotel:"库尔勒市区酒店 · 预估 250–400元/间",
+    hotelImg:"https://images.unsplash.com/photo-1565516119206-9d35a7383153?w=200&h=120&fit=crop",
+    foodImg:"https://images.unsplash.com/photo-1619261148028-967ca5e0ccc3?w=200&h=120&fit=crop",
     tips:"⚠️ 独库公路10月初可能因降雪封路，提前确认路况！",isHeavy:true
   },
   { id:11, day:"DAY 12", date:"10月5日 · 周日", title:"库尔勒 → 乌鲁木齐", coord:[43.7826,87.6168], color:"#6366f1",
@@ -989,13 +1009,18 @@ map.on('click',()=>{if(window.innerWidth<=768)closeDetail();else document.getEle
       const isBooked=!!d.hotelBooked;
       html+=`<div class="m-node">
         <div class="m-axis">
-          <div class="m-dot" style="background:${isBooked?'#22c55e':'#64748b'}"><i class="fas fa-${isBooked?'check':'bed'}" style="font-size:12px"></i></div>
+          <div class="m-dot" style="background:${isBooked?'#22c55e':'#64748b'}"><i class="fas fa-${isBooked?'check':'bed'}" style="font-size:13px"></i></div>
           ${d.food?'<div class="m-line"></div>':''}
         </div>
         <div class="m-info-card hotel">
-          <div class="m-info-label"><i class="fas fa-hotel"></i> ${isBooked?'已定酒店':'住宿推荐'}</div>
-          <div class="m-info-text">${d.hotel}</div>
-          ${isBooked?`<div class="m-booked"><i class="fas fa-check-circle"></i> ${d.hotelBooked.name} · ${d.hotelBooked.room}</div>`:''}
+          <div class="m-info-top">
+            ${d.hotelImg?`<img class="m-info-img" src="${d.hotelImg}" alt="">`:''}
+            <div class="m-info-body">
+              <div class="m-info-label"><i class="fas fa-hotel"></i> ${isBooked?'已定酒店':'住宿推荐'}</div>
+              <div class="m-info-text">${d.hotel}</div>
+              ${isBooked?`<div class="m-booked"><i class="fas fa-check-circle"></i> ${d.hotelBooked.name} · ${d.hotelBooked.room}</div>`:''}
+            </div>
+          </div>
         </div>
       </div>`;
     }
@@ -1004,11 +1029,16 @@ map.on('click',()=>{if(window.innerWidth<=768)closeDetail();else document.getEle
     if(d.food){
       html+=`<div class="m-node">
         <div class="m-axis">
-          <div class="m-dot" style="background:#ef4444"><i class="fas fa-utensils" style="font-size:12px"></i></div>
+          <div class="m-dot" style="background:#ef4444"><i class="fas fa-utensils" style="font-size:13px"></i></div>
         </div>
         <div class="m-info-card food">
-          <div class="m-info-label"><i class="fas fa-utensils"></i> 美食推荐</div>
-          <div class="m-info-text">${d.food}</div>
+          <div class="m-info-top">
+            ${d.foodImg?`<img class="m-info-img" src="${d.foodImg}" alt="">`:''}
+            <div class="m-info-body">
+              <div class="m-info-label"><i class="fas fa-utensils"></i> 美食推荐</div>
+              <div class="m-info-text">${d.food}</div>
+            </div>
+          </div>
         </div>
       </div>`;
     }
