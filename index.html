@@ -336,11 +336,40 @@ body{font-family:'Noto Sans SC','Microsoft YaHei',sans-serif;background:#f0f7ff;
   }
   .m-info-action{
     flex:1;padding:10px 0;text-align:center;
-    font-size:11px;color:#0ea5e9;font-weight:500;
-    display:flex;flex-direction:column;align-items:center;gap:3px;
+    font-size:12px;color:#0ea5e9;font-weight:500;
+    display:flex;align-items:center;justify-content:center;gap:6px;
+    cursor:pointer;
   }
   .m-info-action:not(:last-child){border-right:1px solid #f0f0f0}
+  .m-info-action:active{background:rgba(14,165,233,.05)}
   .m-info-action i{font-size:14px}
+
+  /* 拨打电话弹窗 */
+  .m-call-overlay{
+    display:none;position:fixed;inset:0;
+    background:rgba(0,0,0,.4);z-index:5000;
+    align-items:center;justify-content:center;
+    backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);
+  }
+  .m-call-overlay.show{display:flex}
+  .m-call-box{
+    background:rgba(255,255,255,.95);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+    border-radius:20px;padding:24px;width:280px;
+    box-shadow:0 10px 40px rgba(0,0,0,.15);
+  }
+  .m-call-title{font-size:16px;font-weight:600;color:#0a2540;text-align:center;margin-bottom:16px}
+  .m-call-num{
+    display:block;width:100%;padding:14px;border:none;border-radius:14px;
+    background:#f0f0f0;font-size:16px;font-weight:500;color:#0a2540;
+    text-align:center;margin-bottom:10px;cursor:pointer;
+  }
+  .m-call-num:active{background:#e0e0e0}
+  .m-call-cancel{
+    display:block;width:100%;padding:14px;border:none;border-radius:14px;
+    background:#f0f0f0;font-size:15px;font-weight:500;color:#666;
+    text-align:center;cursor:pointer;
+  }
+  .m-call-cancel:active{background:#e0e0e0}
 
   /* 美食推荐卡（图标分类） */
   .m-food-card{
@@ -488,6 +517,15 @@ body{font-family:'Noto Sans SC','Microsoft YaHei',sans-serif;background:#f0f7ff;
   <div class="m-content" id="mContent"></div>
 </div>
 
+<!-- ===== 拨打电话弹窗 ===== -->
+<div class="m-call-overlay" id="mCallOverlay">
+  <div class="m-call-box">
+    <div class="m-call-title">拨打酒店电话</div>
+    <a class="m-call-num" id="mCallNum" href="tel:">+86-13779054568</a>
+    <button class="m-call-cancel" onclick="document.getElementById('mCallOverlay').classList.remove('show')">取消</button>
+  </div>
+</div>
+
 <!-- ===== 移动端详情弹窗 ===== -->
 <div class="m-detail-overlay" id="mDetailOverlay"></div>
 <div class="m-detail-panel" id="mDetailPanel">
@@ -553,8 +591,8 @@ const days = [
     spots:[{icon:"🌅",type:"mountain",name:"神仙湾晨雾",desc:"清晨6:30-8:00拍摄晨雾",img:"https://plus.unsplash.com/premium_photo-1669613233573-4911a0a81c63?w=200&h=200&fit=crop"},{icon:"🏡",type:"village",name:"禾木村",desc:"中国第一村，金黄白桦林",img:"https://images.unsplash.com/photo-1729581173921-417f634eb443?w=200&h=200&fit=crop"},{icon:"⛰️",type:"mountain",name:"禾木观景台",desc:"俯瞰禾木村全景",img:"https://images.unsplash.com/photo-1729581173921-417f634eb443?w=200&h=200&fit=crop"}],
     food:"🏡 图瓦人手抓肉 · 奶茶泡馕 · 烤羊排 · 奶疙瘩 · 村里小木屋餐馆都不踩雷",
     hotel:"✅ 已定酒店",
-    hotelBooked:{name:"知山SAN逸境度假酒店(禾木风景区店)",room:"1张1.8大床 + 2张1.2单人床"},
-    hotelImg:"https://plus.unsplash.com/premium_photo-1661962821338-c07da63995f9?w=200&h=120&fit=crop",
+    hotelBooked:{name:"知山SAN逸境度假酒店(禾木风景区店)",room:"1张1.8大床 + 2张1.2单人床",addr:"布尔津禾木风景区入口服务区中国电信西北方向30米",tel:"+86-13779054568"},
+    hotelImg:"https://images.unsplash.com/photo-1582719508461-905c673771fd?w=200&h=120&fit=crop",
     foodImg:"https://plus.unsplash.com/premium_photo-1724763204617-3a9c9e811c8d?w=200&h=120&fit=crop",
     tips:"禾木住宿务必提前预订！夜晚可观星"
   },
@@ -565,7 +603,7 @@ const days = [
     spots:[{icon:"🌄",type:"mountain",name:"禾木日出",desc:"清晨6:00观景台"},{icon:"🚴",type:"grass",name:"河谷骑行",desc:"穿越白桦林和草原"},{icon:"🐴",type:"grass",name:"骑马体验",desc:"草原骑马"}],
     food:"☕ 早起来碗奶茶 · 手抓饭 · 烤全羊（可提前和民宿预订）· 酸奶 · 晚上看星空配热饮",
     hotel:"✅ 已定酒店（续住）",
-    hotelBooked:{name:"知山SAN逸境度假酒店(禾木风景区店)",room:"1张1.8大床 + 2张1.2单人床"},
+    hotelBooked:{name:"知山SAN逸境度假酒店(禾木风景区店)",room:"1张1.8大床 + 2张1.2单人床",addr:"布尔津禾木风景区入口服务区中国电信西北方向30米",tel:"+86-13779054568"},
     tips:"休整日，慢节奏享受禾木的宁静",isRest:true
   },
   { id:6, day:"DAY 7", date:"9月30日 · 周二", title:"禾木 → 布尔津", coord:[47.7020,86.8606], color:"#f59e0b",
@@ -1036,6 +1074,8 @@ map.on('click',()=>{if(window.innerWidth<=768)closeDetail();else document.getEle
     // 酒店信息
     if(d.hotel){
       const isBooked=!!d.hotelBooked;
+      const addr=d.hotelBooked?d.hotelBooked.addr:'';
+      const tel=d.hotelBooked?d.hotelBooked.tel:'';
       html+=`<div class="m-node">
         <div class="m-axis">
           <div class="m-dot" style="background:${isBooked?'#22c55e':'#64748b'}"><span style="font-size:15px">🏨</span></div>
@@ -1047,13 +1087,12 @@ map.on('click',()=>{if(window.innerWidth<=768)closeDetail();else document.getEle
             <div class="m-info-body">
               <div class="m-info-label"><i class="fas fa-hotel"></i> ${isBooked?'已定酒店':'住宿推荐'}</div>
               <div class="m-info-text">${isBooked?d.hotelBooked.name:d.hotel}</div>
-              ${isBooked?`<div class="m-info-sub">${d.hotelBooked.room}</div><div class="m-booked"><i class="fas fa-check-circle"></i> 已预订</div>`:`<div class="m-info-sub">预估价格可查看</div>`}
+              ${isBooked?`<div class="m-info-sub">${d.hotelBooked.room}</div>`:`<div class="m-info-sub">预估价格可查看</div>`}
             </div>
           </div>
           <div class="m-info-actions">
-            <div class="m-info-action"><i class="fas fa-map-marker-alt"></i>地图导航</div>
-            <div class="m-info-action"><i class="fas fa-phone"></i>联系酒店</div>
-            <div class="m-info-action"><i class="fas fa-info-circle"></i>设施详情</div>
+            <div class="m-info-action" onclick="window.open('https://uri.amap.com/marker?position=&name=${encodeURIComponent(isBooked?d.hotelBooked.name:'')}&address=${encodeURIComponent(addr)}','_blank')"><i class="fas fa-map-marker-alt"></i> 地图导航</div>
+            <div class="m-info-action" onclick="window.showCallDialog('${tel}')"><i class="fas fa-phone"></i> 联系酒店</div>
           </div>
         </div>
       </div>`;
@@ -1313,6 +1352,16 @@ map.on('click',()=>{if(window.innerWidth<=768)closeDetail();else document.getEle
       window.map.flyTo([d.coord[0]-0.5,d.coord[1]],8,{duration:.5});
     }
   }
+
+  // 拨打电话弹窗
+  window.showCallDialog=function(tel){
+    if(!tel)return;
+    const overlay=document.getElementById('mCallOverlay');
+    const num=document.getElementById('mCallNum');
+    num.href='tel:'+tel.replace(/[^0-9+]/g,'');
+    num.textContent=tel;
+    overlay.classList.add('show');
+  };
 
   // 监听Sheet状态变化，自动调整地图偏移
   const sheetEl=document.getElementById('mSheet');
