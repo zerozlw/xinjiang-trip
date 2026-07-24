@@ -991,7 +991,7 @@ map.on('click',()=>{if(window.innerWidth<=768)closeDetail();else document.getEle
       const hasImg=s.img;
       html+=`<div class="m-node">
         <div class="m-axis">
-          <div class="m-dot" style="background:${d.color}">${i+1}</div>
+          <div class="m-dot" style="background:${d.color}"><span style="font-size:15px">${s.icon}</span></div>
           ${!isLast?'<div class="m-line"></div>':''}
         </div>
         <div class="m-card">
@@ -1009,7 +1009,7 @@ map.on('click',()=>{if(window.innerWidth<=768)closeDetail();else document.getEle
       const isBooked=!!d.hotelBooked;
       html+=`<div class="m-node">
         <div class="m-axis">
-          <div class="m-dot" style="background:${isBooked?'#22c55e':'#64748b'}"><i class="fas fa-${isBooked?'check':'bed'}" style="font-size:13px"></i></div>
+          <div class="m-dot" style="background:${isBooked?'#22c55e':'#64748b'}"><span style="font-size:15px">🏨</span></div>
           ${d.food?'<div class="m-line"></div>':''}
         </div>
         <div class="m-info-card hotel">
@@ -1029,7 +1029,7 @@ map.on('click',()=>{if(window.innerWidth<=768)closeDetail();else document.getEle
     if(d.food){
       html+=`<div class="m-node">
         <div class="m-axis">
-          <div class="m-dot" style="background:#ef4444"><i class="fas fa-utensils" style="font-size:13px"></i></div>
+          <div class="m-dot" style="background:#ef4444"><span style="font-size:15px">🍽️</span></div>
         </div>
         <div class="m-info-card food">
           <div class="m-info-top">
