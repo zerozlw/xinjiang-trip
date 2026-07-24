@@ -827,7 +827,7 @@ map.on('click',()=>{if(window.innerWidth<=768)closeDetail();else document.getEle
   mapWrap.addEventListener('touchend',()=>{touchStartY=0},{passive:true});
 })();
 
-setTimeout(()=>{document.querySelector('.day-card').click();},500);
+// 初始化已在上方完成，无需额外触发
 
 // ===== 移动端UI =====
 (function(){
@@ -1264,12 +1264,9 @@ setTimeout(()=>{document.querySelector('.day-card').click();},500);
   renderDay(0);
   highlightMarker(0);
   showDaySpots(0);
-  // 初始偏移
-  const initSheet=document.getElementById('mSheet');
-  if(initSheet&&!initSheet.classList.contains('expanded')&&!initSheet.classList.contains('collapsed')){
-    const d=days[0];
-    if(d&&window.map){window.map.setView([d.coord[0]-0.5,d.coord[1]],8);}
-  }
+  // 初始偏移（不触发updateMapOffset，避免被覆盖）
+  const d0=days[0];
+  if(d0&&window.map){window.map.setView([d0.coord[0]-0.5,d0.coord[1]],8,{animate:false});}
 })();
 
 // === PWA 离线缓存 ===
