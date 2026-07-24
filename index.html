@@ -875,23 +875,7 @@ setTimeout(()=>{document.querySelector('.day-card').click();},500);
     showDaySpots(idx);
     const d=days[idx];
     if(!d||!window.map)return;
-
-    // 根据Sheet状态调整地图焦点
-    const sheet=document.getElementById('mSheet');
-    const isExpanded=sheet&&sheet.classList.contains('expanded');
-    const isCollapsed=sheet&&sheet.classList.contains('collapsed');
-
-    if(isExpanded){
-      // 全开：地图几乎不可见，居中即可
-      window.map.flyTo(d.coord,8,{duration:1});
-    }else if(isCollapsed){
-      // 收起：地图全屏可见，正常居中
-      window.map.flyTo(d.coord,8,{duration:1});
-    }else{
-      // 半开：Sheet占65%，地图只露上面35%
-      // 焦点大幅上移让地点标记在可见区域
-      window.map.flyTo([d.coord[0]-0.5,d.coord[1]],8,{duration:1});
-    }
+    updateMapOffset();
   }
 
   // 切换Tab时：只显示当天标记，同坐标的其他标记隐藏
@@ -1249,10 +1233,41 @@ setTimeout(()=>{document.querySelector('.day-card').click();},500);
     },{passive:true});
   })();
 
-  // 初始化第一天
+  // 地图偏移：根据Sheet状态调整焦点
+  function updateMapOffset(){
+    if(!window.map||activeDay<0)return;
+    const d=days[activeDay];
+    if(!d)return;
+    const sheet=document.getElementById('mSheet');
+    const isExpanded=sheet&&sheet.classList.contains('expanded');
+    const isCollapsed=sheet&&sheet.classList.contains('collapsed');
+    if(isExpanded){
+      window.map.flyTo(d.coord,8,{duration:.5});
+    }else if(isCollapsed){
+      window.map.flyTo(d.coord,8,{duration:.5});
+    }else{
+      // 半开：偏移-0.5
+      window.map.flyTo([d.coord[0]-0.5,d.coord[1]],8,{duration:.5});
+    }
+  }
+
+  // 监听Sheet状态变化，自动调整地图偏移
+  const sheetEl=document.getElementById('mSheet');
+  if(sheetEl){
+    const obs=new MutationObserver(()=>updateMapOffset());
+    obs.observe(sheetEl,{attributes:true,attributeFilter:['class']});
+  }
+
+  // 初始化：半开状态 + DAY1 + 地图偏移-0.5
   renderDay(0);
   highlightMarker(0);
   showDaySpots(0);
+  // 初始偏移
+  const initSheet=document.getElementById('mSheet');
+  if(initSheet&&!initSheet.classList.contains('expanded')&&!initSheet.classList.contains('collapsed')){
+    const d=days[0];
+    if(d&&window.map){window.map.setView([d.coord[0]-0.5,d.coord[1]],8);}
+  }
 })();
 
 // === PWA 离线缓存 ===
