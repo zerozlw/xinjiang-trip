@@ -230,14 +230,9 @@ body{font-family:'Noto Sans SC','Microsoft YaHei',sans-serif;background:#f0f7ff;
   .m-sheet.expanded .m-day-hero{height:200px;margin-bottom:12px}
   .m-day-hero img{width:100%;height:100%;object-fit:cover}
   .m-day-hero-overlay{
-    position:absolute;bottom:0;left:0;right:0;height:100px;
-    background:linear-gradient(transparent,rgba(0,0,0,.55));
+    position:absolute;bottom:0;left:0;right:0;height:60px;
+    background:linear-gradient(transparent,#f8fbff);
   }
-  .m-day-hero-info{
-    position:absolute;bottom:12px;left:16px;right:16px;
-  }
-  .m-day-hero-info h3{font-size:18px;font-weight:700;color:#fff;text-shadow:0 1px 8px rgba(0,0,0,.5)}
-  .m-day-hero-info span{font-size:12px;color:rgba(255,255,255,.85);text-shadow:0 1px 4px rgba(0,0,0,.4)}
 
   /* 每日标题 */
   .m-day-header{
@@ -959,7 +954,7 @@ map.on('click',()=>{if(window.innerWidth<=768)closeDetail();else document.getEle
     let html='';
 
     // 地点大图（全开时跟随内容滚动）
-    html+=`<div class="m-day-hero"><img src="${d.image}" alt="${d.title}"><div class="m-day-hero-overlay"></div><div class="m-day-hero-info"><h3>${d.title}</h3><span>${d.day} · ${d.date}</span></div></div>`;
+    html+=`<div class="m-day-hero"><img src="${d.image}" alt="${d.title}"><div class="m-day-hero-overlay"></div></div>`;
 
     // 每日标题
     html+=`<div class="m-day-header"><h3>${d.title}</h3><span class="m-date">${d.date}</span></div>`;
