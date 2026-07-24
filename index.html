@@ -220,11 +220,12 @@ body{font-family:'Noto Sans SC','Microsoft YaHei',sans-serif;background:#f0f7ff;
     position:relative;
   }
 
-  /* 地点大图（全开时跟随内容滚动） */
+  /* 地点大图（仅全开时显示） */
   .m-day-hero{
-    width:100%;height:200px;position:relative;overflow:hidden;
-    margin-bottom:12px;border-radius:0;
+    width:100%;height:0;overflow:hidden;position:relative;
+    margin-bottom:0;transition:height .4s cubic-bezier(.32,.72,0,1);
   }
+  .m-sheet.expanded .m-day-hero{height:200px;margin-bottom:12px}
   .m-day-hero img{width:100%;height:100%;object-fit:cover}
   .m-day-hero-overlay{
     position:absolute;bottom:0;left:0;right:0;height:60px;
@@ -888,8 +889,8 @@ setTimeout(()=>{document.querySelector('.day-card').click();},500);
       window.map.flyTo(d.coord,8,{duration:1});
     }else{
       // 半开：Sheet占65%，地图只露上面35%
-      // 焦点上移让地点标记在可见区域偏上位置
-      window.map.flyTo([d.coord[0]+0.25,d.coord[1]],8,{duration:1});
+      // 焦点大幅上移让地点标记在可见区域
+      window.map.flyTo([d.coord[0]+0.5,d.coord[1]],8,{duration:1});
     }
   }
 
